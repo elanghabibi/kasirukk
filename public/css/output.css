@@ -26,7 +26,6 @@
     --color-gray-600: oklch(44.6% 0.03 256.802);
     --color-gray-900: oklch(21% 0.034 264.665);
     --color-gray-950: oklch(13% 0.028 261.692);
-    --color-black: #000;
     --color-white: #fff;
     --spacing: 0.25rem;
     --container-sm: 24rem;
@@ -55,6 +54,7 @@
     --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     --default-font-family: var(--font-sans);
     --default-mono-font-family: var(--font-mono);
+    --font-jakarta: "Plus Jakarta Sans";
   }
 }
 @layer base {
@@ -283,9 +283,6 @@
   }
   .grid {
     display: grid;
-  }
-  .table {
-    display: table;
   }
   .aspect-square {
     aspect-ratio: 1 / 1;
@@ -650,6 +647,13 @@
       width: calc(7 / 10 * 100%);
     }
   }
+}
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("../font/plusjakartasans.ttf");
+}
+body {
+  font-family: var(--font-jakarta);
 }
 @property --tw-translate-x {
   syntax: "*";

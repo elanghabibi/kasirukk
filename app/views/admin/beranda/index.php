@@ -1,18 +1,18 @@
 
-<h1 class="text-3xl font-semibold">Halo, <?= $_SESSION['user']['nama'] ?></h1>
+<h1 class="text-2xl font-semibold">Halo, <?= $_SESSION['user']['nama'] ?></h1>
 
 <div class="w-full grid grid-cols-3 gap-4 h-32">
     <div class="w-full bg-white border-2 border-gray-200 rounded-xl text-gray-600 p-6 flex flex-col gap-4 shadow-md">
         <h2 class="font-medium">Transaksi Bulanan</h2>
-        <p class="text-3xl font-semibold">1</p>
+        <p class="text-3xl font-semibold"><?= $totalTransaksi ?></p>
     </div>
     <div class="w-full bg-white border-2 border-gray-200 rounded-xl text-gray-600 p-6 flex flex-col gap-4 shadow-md">
         <h2 class="font-medium">Pendapatan Bulanan</h2>
-        <p class="text-3xl font-semibold">Rp15.400</p>
+        <p class="text-3xl font-semibold"><?= Helpers::rupiah($totalPendapatan) ?></p>
     </div>
     <div class="w-full bg-white border-2 border-gray-200 rounded-xl text-gray-600 p-6 flex flex-col gap-4 shadow-md">
         <h2 class="font-medium">Total Menu</h2>
-        <p class="text-3xl font-semibold">5</p>
+        <p class="text-3xl font-semibold"><?= $totalMenu ?></p>
     </div>
 </div>
 
