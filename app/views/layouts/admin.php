@@ -26,7 +26,7 @@
             >
               T
             </div>
-            <div class="flex flex-col -space-y-1">
+            <div class="flex flex-col">
               <h2 class="font-bold">RM. Maju Jaya</h2>
               <p class="text-xs">Sistem Kasir</p>
             </div>
@@ -153,7 +153,7 @@
         </div>
       </header>
 
-      <main class="flex-1 min-h-0 overflow-y-auto flex flex-col gap-4 p-4">
+      <main class="flex-1 min-h-0 overflow-y-auto flex flex-col gap-4 py-4 pr-4">
         <?php require_once $view ?>
       </main>
     </section>
@@ -168,7 +168,6 @@
     <?php
     unset($_SESSION['old']);
     unset($_SESSION['errors']);
-
     ?>
   </body>
   <script src="<?= BASEURL . "/js/script.js" ?>"></script>

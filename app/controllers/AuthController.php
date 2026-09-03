@@ -5,9 +5,7 @@ class AuthController extends Controller
     public function formLogin()
     {
         $data['title'] = "Login";
-        $this->view("auth/login", $data, "guest");
-
-        
+        $this->view("auth/login", $data, "guest");        
     }
 
     public function formRegister()

@@ -158,27 +158,27 @@ abstract class Model
     }
 
     // Hitung total dari kolom tertentu bulan ini
-    public function sumThisMonth($column)
-    {
-        $query = "SELECT SUM({$column}) AS total
-                FROM {$this->table}
-                WHERE {$column} IS NOT NULL
-                AND created_at >= DATE_FORMAT(CURDATE(), '%Y-%m-01')
-                AND created_at < DATE_FORMAT(
-                    CURDATE() + INTERVAL 1 MONTH,
-                    '%Y-%m-01'
-                )";
+    public function sumThisMonth($column, $dateColumn = 'created_at')
+{
+    $query = "SELECT SUM({$column}) AS total
+              FROM {$this->table}
+              WHERE {$column} IS NOT NULL
+              AND {$dateColumn} >= DATE_FORMAT(CURDATE(), '%Y-%m-01')
+              AND {$dateColumn} < DATE_FORMAT(
+                  CURDATE() + INTERVAL 1 MONTH,
+                  '%Y-%m-01'
+              )";
 
-        if ($this->softDelete) {
-            $query .= " AND deleted_at IS NULL";
-        }
-
-        $this->db->query($query);
-
-        $result = $this->db->single();
-
-        return (float) ($result['total'] ?? 0);
+    if ($this->softDelete) {
+        $query .= " AND deleted_at IS NULL";
     }
+
+    $this->db->query($query);
+
+    $result = $this->db->single();
+
+    return (float) ($result['total'] ?? 0);
+}
 
 
     /*

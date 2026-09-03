@@ -4,8 +4,8 @@ class AdminBerandaController extends Controller {
     public function index() {
         $data['userModel'] = $this->model("User");
         $data['totalMenu'] = $this->model("Menu")->count();
-        $data['totalTransaksi'] = $this->model("Transaksi")->countThisMonth();
-        $data['totalPendapatan'] = $this->model("Transaksi")->sumThisMonth("total");
+        $data['totalTransaksi'] = $this->model("Transaksi")->countThisMonth('tanggal_transaksi');
+        $data['totalPendapatan'] = $this->model("Transaksi")->sumThisMonth("total", "tanggal_transaksi");
 
         
         $data["title"] = "Beranda";

@@ -83,7 +83,6 @@ class App {
         }
 
         if (!$routeFound) {
-            // echo "404";
             $this->call404();
             return;
         }
