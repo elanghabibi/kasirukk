@@ -11,7 +11,10 @@ class Route {
         
         $router->get("/kasir", ["KasirBerandaController", "index"], ['auth', "role:kasir"]);
      
+        // Admin
         $router->get("/admin", ["AdminBerandaController", "index"], ['auth', "role:admin"]);
+        $router->get("/admin/user", ["AdminUserController", "index"], ['auth', "role:admin"]);
+        $router->post("/admin/user/destroy/{id}", ["AdminUserController", "destroy"], ['auth', "role:admin"]);
 
         // Auth
         $router->get("/login", ['AuthController', 'formLogin'], ['guest']);

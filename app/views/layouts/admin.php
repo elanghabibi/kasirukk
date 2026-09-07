@@ -37,39 +37,47 @@
           <nav>
             <ul class="flex flex-col gap-4">
               <li
-                class="w-full border-l-4 border-lime-600 py-2 pl-6 rounded-xl bg-lime-50 flex items-center"
+                class="w-full flex items-center <?= Helpers::currentUrl() == "/admin" ? "border-l-4 border-lime-600 py-2 pl-6 rounded-xl bg-lime-50 text-lime-600" : "pl-4 text-gray-600" ?>"
               >
                 <a
-                  href=""
-                  class="flex items-center text-lime-600 gap-3 font-medium"
+                  href="<?= Helpers::url('/admin') ?>"
+                  class="flex items-center gap-3 font-medium"
                   ><i class="bx bx-home-alt text-xl"></i> Beranda</a
                 >
               </li>
-              <li class="w-full pl-4 flex items-center">
+              <li
+                class="w-full flex items-center <?= Helpers::currentUrl() == "/admin/user" ? "border-l-4 border-lime-600 py-2 pl-6 rounded-xl bg-lime-50 text-lime-600" : "pl-4 text-gray-600" ?>"
+              >
                 <a
-                  href=""
-                  class="flex items-center text-gray-600 gap-3 font-medium"
+                  href="<?= Helpers::url('/admin/user') ?>"
+                  class="flex items-center gap-3 font-medium"
                   ><i class="bx bx-user text-xl"></i> User</a
                 >
               </li>
-              <li class="w-full pl-4 flex items-center">
+              <li
+                class="w-full flex items-center <?= Helpers::currentUrl() == "/admin/menu" ? "border-l-4 border-lime-600 py-2 pl-6 rounded-xl bg-lime-50 text-lime-600" : "pl-4 text-gray-600" ?>"
+              >
                 <a
-                  href=""
-                  class="flex items-center text-gray-600 gap-3 font-medium"
+                  href="<?= Helpers::url('/admin/menu') ?>"
+                  class="flex items-center gap-3 font-medium"
                   ><i class="bx bx-fork text-xl"></i> Menu</a
                 >
               </li>
-              <li class="w-full pl-4 flex items-center">
+              <li
+                class="w-full flex items-center <?= Helpers::currentUrl() == "/admin/kategori" ? "border-l-4 border-lime-600 py-2 pl-6 rounded-xl bg-lime-50 text-lime-600" : "pl-4 text-gray-600" ?>"
+              >
                 <a
-                  href=""
-                  class="flex items-center text-gray-600 gap-3 font-medium"
+                  href="<?= Helpers::url('/admin/kategori') ?>"
+                  class="flex items-center gap-3 font-medium"
                   ><i class="bx bx-categories text-xl"></i> Kategori</a
                 >
               </li>
-              <li class="w-full pl-4 flex items-center">
+              <li
+                class="w-full flex items-center <?= Helpers::currentUrl() == "/admin/riwayat-transaksi" ? "border-l-4 border-lime-600 py-2 pl-6 rounded-xl bg-lime-50 text-lime-600" : "pl-4 text-gray-600" ?>"
+              >
                 <a
-                  href=""
-                  class="flex items-center text-gray-600 gap-3 font-medium"
+                  href="<?= Helpers::url('/admin/riwayat-transaksi') ?>"
+                  class="flex items-center gap-3 font-medium"
                   ><i class="bx bx-history text-xl"></i> Riwayat Transaksi</a
                 >
               </li>
@@ -153,7 +161,7 @@
         </div>
       </header>
 
-      <main class="flex-1 min-h-0 overflow-y-auto flex flex-col gap-4 py-4 pr-4">
+      <main class="flex-1 min-h-0 overflow-y-auto flex flex-col gap-4 pr-6 pl-2 py-4">
         <?php require_once $view ?>
       </main>
     </section>

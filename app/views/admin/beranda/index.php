@@ -16,6 +16,7 @@
     </div>
 </div>
 
+
 <div class="mt-4 flex flex-col gap-2">
     <h2>Jelajahi Aplikasi</h2>
     <div class="flex gap-4">
