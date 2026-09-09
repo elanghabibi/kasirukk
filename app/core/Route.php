@@ -13,8 +13,13 @@ class Route {
      
         // Admin
         $router->get("/admin", ["AdminBerandaController", "index"], ['auth', "role:admin"]);
-        $router->get("/admin/user", ["AdminUserController", "index"], ['auth', "role:admin"]);
-        $router->post("/admin/user/destroy/{id}", ["AdminUserController", "destroy"], ['auth', "role:admin"]);
+
+            // Kelola User
+            $router->get("/admin/user", ["AdminUserController", "index"], ['auth', "role:admin"]);
+            $router->post("/admin/user/tambah", ["AdminUserController", "store"], ['auth', "role:admin"]);
+            $router->post("/admin/user/destroy/{id}", ["AdminUserController", "destroy"], ['auth', "role:admin"]);
+            $router->post("/admin/user/nonaktifkan/{id}", ["AdminUserController", "nonaktifkan"], ['auth', "role:admin"]);
+            $router->post("/admin/user/aktifkan/{id}", ["AdminUserController", "aktifkan"], ['auth', "role:admin"]);
 
         // Auth
         $router->get("/login", ['AuthController', 'formLogin'], ['guest']);

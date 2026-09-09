@@ -20,19 +20,19 @@
 <div class="mt-4 flex flex-col gap-2">
     <h2>Jelajahi Aplikasi</h2>
     <div class="flex gap-4">
-        <a href="" class="w-28 aspect-square rounded-xl border border-gray-200 shadow-md p-4 flex flex-col gap-2 items-center justify-center">
+        <a href="<?= Helpers::url("/admin/user") ?>" class="w-28 aspect-square rounded-xl border border-gray-200 shadow-md p-4 flex flex-col gap-2 items-center justify-center">
             <i class="bx bx-user text-lime-600 text-5xl"></i>
             <p class="text-sm font-medium">User</p>
         </a>
-        <a href="" class="w-28 aspect-square rounded-xl border border-gray-200 shadow-md p-4 flex flex-col gap-2 items-center justify-center">
+        <a href="<?= Helpers::url("/admin/menu") ?>" class="w-28 aspect-square rounded-xl border border-gray-200 shadow-md p-4 flex flex-col gap-2 items-center justify-center">
             <i class="bx bx-fork text-lime-600 text-5xl"></i>
             <p class="text-sm font-medium">Menu</p>
         </a>
-        <a href="" class="w-28 aspect-square rounded-xl border border-gray-200 shadow-md p-4 flex flex-col gap-2 items-center justify-center">
+        <a href="<?= Helpers::url("/admin/kategori") ?>" class="w-28 aspect-square rounded-xl border border-gray-200 shadow-md p-4 flex flex-col gap-2 items-center justify-center">
             <i class="bx bx-categories text-lime-600 text-5xl"></i>
             <p class="text-sm font-medium">Kategori</p>
         </a>
-        <a href="" class="w-28 aspect-square rounded-xl border border-gray-200 shadow-md p-4 flex flex-col gap-2 items-center justify-center">
+        <a href="<?= Helpers::url("/admin/riwayat-transaksi") ?>" class="w-28 aspect-square rounded-xl border border-gray-200 shadow-md p-4 flex flex-col gap-2 items-center justify-center">
             <i class="bx bx-history text-lime-600 text-5xl"></i>
             <p class="text-sm font-medium w-full truncate">Riwayat Transaksi</p>
         </a>

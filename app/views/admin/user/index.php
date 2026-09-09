@@ -27,13 +27,13 @@
 <!-- Filter -->
 <div class="flex gap-4">
     <a
-    href=""
-    class="text-sm w-fit h-fit px-6 py-1 rounded-full border bg-lime-50 text-lime-600 border-lime-600"
+    href="<?=  $status === 'aktif' ? '' : Helpers::url("/admin/user") ?>"
+    class="text-sm w-fit h-fit px-6 py-1 rounded-full border <?= $status === 'aktif' ? 'bg-lime-50 text-lime-600 border-lime-600' : 'text-gray-600 border-gray-600' ?>"
     >Aktif</a
     >
     <a
-    href=""
-    class="text-sm w-fit h-fit px-6 py-1 rounded-full border text-gray-600 border-gray-600"
+    href="<?=  $status === 'nonaktif' ? '' : '?status=nonaktif' ?>"
+    class="text-sm w-fit h-fit px-6 py-1 rounded-full border <?= $status === 'nonaktif' ? 'bg-lime-50 text-lime-600 border-lime-600' : 'text-gray-600 border-gray-600' ?>"
     >Nonaktif</a
     >
 </div>
@@ -41,7 +41,7 @@
 
 <div class="flex gap-4">
     <!-- Table -->
-    <div class="w-7/10 border border-gray-200 overflow-hidden rounded-lg">
+    <div class="w-68/100 h-fit border border-gray-200 overflow-hidden rounded-lg">
     <div class="overflow-x-auto">
         <table class="w-full table-fixed text-sm text-left">
         <thead class="bg-gray-100 text-gray-600 font-semibold">
@@ -72,107 +72,154 @@
                     <?php endif; ?>
                 </td>
                 <td class="w-40 py-3 px-6">
-                    <div class="flex gap-2">
-                        <div class="modal">
-                            <a href=""
-                            class="modal-btn cursor-pointer w-fit aspect-square p-2 bg-blue-100 text-blue-600 rounded flex items-center gap-1"
-                            >
-                            <i class="bx bx-edit"></i>
-                            </a>
-                        </div>
+                    <?php if ($status === "aktif"): ?>
+                        <div class="flex gap-2">
+                            <div class="modal">
+                                <a href=""
+                                class="modal-btn cursor-pointer w-fit aspect-square p-2 bg-blue-100 text-blue-600 rounded flex items-center gap-1"
+                                >
+                                <i class="bx bx-edit"></i>
+                                </a>
+                            </div>
 
-                        <?php if ($user['id'] !== 1): ?>
+                            <?php if ($user['id'] !== 1): ?>
+                            <!-- Button Nonaktif -->
+                            <div class="modal">
+                                <button
+                                class="modal-btn cursor-pointer w-fit aspect-square p-2 bg-gray-100 text-gray-600 rounded flex items-center gap-1"
+                                >
+                                <i class="bx bx-block"></i>
+                                </button>
+
+                                <div
+                                class="modal-panel opacity-0 pointer-events-none absolute top-0 left-0 w-full h-screen flex justify-center items-center bg-gray-950/10"
+                                style="z-index: 200"
+                                >
+                                <div
+                                    class="bg-gray-50 p-6 text-center rounded-xl shadow-lg shadow-gray-600/5 w-80 max-md:w-7/10 flex flex-col gap-6"
+                                >
+                                    <i class="bx bx-block text-red-500 text-5xl"></i>
+                                    <h2 class="text-2xl font-bold leading-6">
+                                    Nonaktifkan User
+                                    </h2>
+                                    <p class="text-sm text-gray-600">
+                                    Apakah anda yakin ingin menonaktifkan user ini?
+                                    </p>
+
+                                    <div class="w-full grid grid-cols-2 gap-4">
+                                    <button
+                                        class="modal-close w-full bg-gray-200 text-gray-950 font-bold py-2 text-sm rounded-lg cursor-pointer"
+                                    >
+                                        Batal
+                                    </button>
+                                    <form action="<?= Helpers::url('/admin/user/nonaktifkan/' . $user['id']) ?>" method="POST" class="form">
+                                        <button
+                                        type="submit"
+                                        class="form-btn w-full bg-red-500 text-gray-50 font-bold py-2 text-sm rounded-lg cursor-pointer"
+                                        >
+                                        <span class="form-btntext"
+                                            >Ya, nonaktifkan</span
+                                        >
+                                        </button>
+                                    </form>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                            <!-- End Button Nonaktif -->
+
+                            <!-- Button Hapus -->
+                            <div class="modal">
+                                <button
+                                class="modal-btn cursor-pointer w-fit aspect-square p-2 bg-red-100 text-red-600 rounded flex items-center gap-1"
+                                >
+                                <i class="bx bx-trash"></i>
+                                </button>
+
+                                <div
+                                class="modal-panel opacity-0 pointer-events-none absolute top-0 left-0 w-full h-screen flex justify-center items-center bg-gray-950/10"
+                                style="z-index: 200"
+                                >
+                                <div
+                                    class="bg-gray-50 p-6 text-center rounded-xl shadow-lg shadow-gray-600/5 w-80 max-md:w-7/10 flex flex-col gap-6"
+                                >
+                                    <i
+                                    class="bx bx-alert-triangle text-red-500 text-5xl"
+                                    ></i>
+                                    <h2 class="text-2xl font-bold leading-6">
+                                    Hapus Data
+                                    </h2>
+                                    <p class="text-sm text-gray-600">
+                                    Apakah anda yakin ingin menghapus?
+                                    </p>
+
+                                    <div class="w-full grid grid-cols-2 gap-4">
+                                    <button
+                                        class="modal-close w-full bg-gray-200 text-gray-950 font-bold py-2 text-sm rounded-lg cursor-pointer"
+                                    >
+                                        Batal
+                                    </button>
+                                    <form action="<?= Helpers::url('/admin/user/destroy/' . $user['id']) ?>" method="POST" class="form">
+                                        <button
+                                        type="submit"
+                                        class="form-btn w-full bg-red-500 text-gray-50 font-bold py-2 text-sm rounded-lg cursor-pointer"
+                                        >
+                                        <span class="form-btntext">Ya, Hapus</span>
+                                        </button>
+                                    </form>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                            <!-- End Button Hapus -->
+                            <?php endif; ?>
+                        </div>
+                    <?php else: ?>
                         <!-- Button Nonaktif -->
-                        <div class="modal">
-                            <button
-                            class="modal-btn cursor-pointer w-fit aspect-square p-2 bg-gray-100 text-gray-600 rounded flex items-center gap-1"
-                            >
-                            <i class="bx bx-block"></i>
-                            </button>
-
-                            <div
-                            class="modal-panel opacity-0 pointer-events-none absolute top-0 left-0 w-full h-screen flex justify-center items-center bg-gray-950/10"
-                            style="z-index: 200"
-                            >
-                            <div
-                                class="bg-gray-50 p-6 text-center rounded-xl shadow-lg shadow-gray-600/5 w-80 max-md:w-7/10 flex flex-col gap-6"
-                            >
-                                <i class="bx bx-block text-red-500 text-5xl"></i>
-                                <h2 class="text-2xl font-bold leading-6">
-                                Nonaktifkan User
-                                </h2>
-                                <p class="text-sm text-gray-600">
-                                Apakah anda yakin ingin menonaktifkan user ini?
-                                </p>
-
-                                <div class="w-full grid grid-cols-2 gap-4">
+                            <div class="modal">
                                 <button
-                                    class="modal-close w-full bg-gray-200 text-gray-950 font-bold py-2 text-sm rounded-lg cursor-pointer"
+                                class="modal-btn cursor-pointer w-fit aspect-square p-2 bg-green-100 text-green-600 rounded flex items-center gap-1"
                                 >
-                                    Batal
+                                <i class="bx bx-power"></i>
                                 </button>
-                                <form action="" class="form">
+
+                                <div
+                                class="modal-panel opacity-0 pointer-events-none absolute top-0 left-0 w-full h-screen flex justify-center items-center bg-gray-950/10"
+                                style="z-index: 200"
+                                >
+                                <div
+                                    class="bg-gray-50 p-6 text-center rounded-xl shadow-lg shadow-gray-600/5 w-80 max-md:w-7/10 flex flex-col gap-6"
+                                >
+                                    <i class="bx bx-power text-green-500 text-5xl"></i>
+                                    <h2 class="text-2xl font-bold leading-6">
+                                    Aktifkan User
+                                    </h2>
+                                    <p class="text-sm text-gray-600">
+                                    Apakah anda yakin ingin mengaktifkan user ini?
+                                    </p>
+
+                                    <div class="w-full grid grid-cols-2 gap-4">
                                     <button
-                                    type="submit"
-                                    class="form-btn w-full bg-red-500 text-gray-50 font-bold py-2 text-sm rounded-lg cursor-pointer"
+                                        class="modal-close w-full bg-gray-200 text-gray-950 font-bold py-2 text-sm rounded-lg cursor-pointer"
                                     >
-                                    <span class="form-btntext"
-                                        >Ya, nonaktifkan</span
-                                    >
+                                        Batal
                                     </button>
-                                </form>
+                                    <form action="<?= Helpers::url('/admin/user/aktifkan/' . $user['id']) ?>" method="POST" class="form">
+                                        <button
+                                        type="submit"
+                                        class="form-btn w-full bg-green-500 text-gray-50 font-bold py-2 text-sm rounded-lg cursor-pointer"
+                                        >
+                                        <span class="form-btntext"
+                                            >Ya, aktifkan</span
+                                        >
+                                        </button>
+                                    </form>
+                                    </div>
+                                </div>
                                 </div>
                             </div>
-                            </div>
-                        </div>
-                        <!-- End Button Nonaktif -->
-
-                        <!-- Button Hapus -->
-                        <div class="modal">
-                            <button
-                            class="modal-btn cursor-pointer w-fit aspect-square p-2 bg-red-100 text-red-600 rounded flex items-center gap-1"
-                            >
-                            <i class="bx bx-trash"></i>
-                            </button>
-
-                            <div
-                            class="modal-panel opacity-0 pointer-events-none absolute top-0 left-0 w-full h-screen flex justify-center items-center bg-gray-950/10"
-                            style="z-index: 200"
-                            >
-                            <div
-                                class="bg-gray-50 p-6 text-center rounded-xl shadow-lg shadow-gray-600/5 w-80 max-md:w-7/10 flex flex-col gap-6"
-                            >
-                                <i
-                                class="bx bx-alert-triangle text-red-500 text-5xl"
-                                ></i>
-                                <h2 class="text-2xl font-bold leading-6">
-                                Hapus Data
-                                </h2>
-                                <p class="text-sm text-gray-600">
-                                Apakah anda yakin ingin menghapus?
-                                </p>
-
-                                <div class="w-full grid grid-cols-2 gap-4">
-                                <button
-                                    class="modal-close w-full bg-gray-200 text-gray-950 font-bold py-2 text-sm rounded-lg cursor-pointer"
-                                >
-                                    Batal
-                                </button>
-                                <form action="<?= Helpers::url('/admin/user/destroy/' . $user['id']) ?>" method="POST" class="form">
-                                    <button
-                                    type="submit"
-                                    class="form-btn w-full bg-red-500 text-gray-50 font-bold py-2 text-sm rounded-lg cursor-pointer"
-                                    >
-                                    <span class="form-btntext">Ya, Hapus</span>
-                                    </button>
-                                </form>
-                                </div>
-                            </div>
-                            </div>
-                        </div>
-                        <!-- End Button Hapus -->
-                        <?php endif; ?>
-                    </div>
+                            <!-- End Button Nonaktif -->
+                    <?php endif; ?>
                 </td>
             </tr>
             <?php endforeach; ?>
@@ -183,6 +230,46 @@
     <!-- End Table -->
 
     <!-- Tambah User -->
-    <div class=""></div>
+    <div class="flex-1 w-full border border-gray-200 rounded-lg p-4 flex flex-col gap-4 shadow-sm">
+        <h2 class="text-lg font-semibold">Tambah User</h2>
+        <form action="<?= Helpers::url('/admin/user/tambah') ?>" method="POST" class="form space-y-4 text-sm">
+            <div class="flex flex-col gap-2">
+                <label for="nama">Nama</label>
+                <input type="text" id="nama" name="nama" placeholder="Joseph" value="<?= $_SESSION['old']['nama'] ?? '' ?>" class="w-full border border-gray-200 rounded-md py-2 pl-2 placeholder:text-gray-300">
+                <?php if (isset($_SESSION['errors']['nama'])): ?>
+                    <p class="text-xs text-red-500"><?= $_SESSION['errors']['nama'] ?></p>
+                <?php endif; ?>
+            </div>
+            <div class="flex flex-col gap-2">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="contoh@rmmajujaya.com" value="<?= $_SESSION['old']['email'] ?? '' ?>" class="w-full border border-gray-200 rounded-md py-2 pl-2 placeholder:text-gray-300">
+                <?php if (isset($_SESSION['errors']['email'])): ?>
+                    <p class="text-xs text-red-500"><?= $_SESSION['errors']['email'] ?></p>
+                <?php endif; ?>
+            </div>
+            <div class="flex gap-4 grid grid-cols-2">
+                <div class="w-full flex flex-col gap-2">
+                    <label for="role">Role</label>
+                    <select name="role" id="role" class="w-full border border-gray-200 rounded-md py-2 pl-2">
+                        <option value="" <?= (isset($_SESSION['old']['role']) && $_SESSION['old']['role'] === '') ? 'selected' : '' ?>>-- Pilih Role --</option>
+                        <option value="admin" <?= (isset($_SESSION['old']['role']) && $_SESSION['old']['role'] === 'admin') ? 'selected' : '' ?>>Admin</option>
+                        <option value="kasir" <?= (isset($_SESSION['old']['role']) && $_SESSION['old']['role'] === 'kasir') ? 'selected' : '' ?>>Kasir</option>
+                    </select>
+                    <?php if (isset($_SESSION['errors']['role'])): ?>
+                        <p class="text-xs text-red-500"><?= $_SESSION['errors']['role'] ?></p>
+                    <?php endif; ?>
+                </div>
+            
+                <div class="w-full flex flex-col gap-2">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="password123" value="<?= $_SESSION['old']['password'] ?? '' ?>" class="w-full border border-gray-200 rounded-md py-2 pl-2 placeholder:text-gray-300">
+                    <?php if (isset($_SESSION['errors']['password'])): ?>
+                        <p class="text-xs text-red-500"><?= $_SESSION['errors']['password'] ?></p>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <button type="submit" class="form-btn w-full py-2 cursor-pointer bg-lime-600 text-gray-50 rounded-lg font-semibold"><span class="form-btntext">Tambah</span></button>
+        </form>
+    </div>
     <!-- End Tambah User -->
 </div>

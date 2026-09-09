@@ -88,14 +88,20 @@ class App {
         }
     }
 
-    public function parseURL() {
-        if (isset($_GET['url'])) {
-            $url = trim($_GET['url']);
-            $url = filter_var($url, FILTER_SANITIZE_URL);
-            return explode("/", $url);
-        }
+    public function parseURL()
+{
+    $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+    $url = trim($url, "/");
+
+    if ($url === "") {
         return [];
     }
+
+    $url = filter_var($url, FILTER_SANITIZE_URL);
+
+    return explode("/", $url);
+}
 
     private function call404() {
         require_once "../app/controllers/ErrorController.php";

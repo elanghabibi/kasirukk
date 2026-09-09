@@ -24,25 +24,40 @@ class AuthController extends Controller
         if (!empty($errors)) {
             $_SESSION['errors'] = $errors;
             $_SESSION['old'] = $_POST;
-            header("Location: " . BASEURL . "/login");
-            exit;
-        }
-        
-        $user = $this->model("User")->where("email", $_POST['email']);
-        
-        if (!$user) {
-            Flasher::setFlash("Email atau password salah", "error", "Gagal");
-            header("Location: " . BASEURL . "/login");
-            exit;
-        }
-        
-        if (!password_verify($_POST['password'], $user[0]['password'])) {
-            Flasher::setFlash("Password salah", "error", "Gagal");
-            $_SESSION['old'] = $_POST;
+
             header("Location: " . BASEURL . "/login");
             exit;
         }
 
+        $user = $this->model("User")->where("email", $_POST['email']);
+
+        // User tidak ditemukan
+        if (!$user) {
+            Flasher::setFlash(
+                "Email atau password salah",
+                "error",
+                "Gagal"
+            );
+
+            header("Location: " . BASEURL . "/login");
+            exit;
+        }
+
+        // Password salah
+        if (!password_verify($_POST['password'], $user[0]['password'])) {
+            Flasher::setFlash(
+                "Email atau password salah",
+                "error",
+                "Gagal"
+            );
+
+            $_SESSION['old'] = $_POST;
+
+            header("Location: " . BASEURL . "/login");
+            exit;
+        }
+
+        // Login berhasil
         $_SESSION['user'] = [
             'id' => $user[0]['id'],
             'nama' => $user[0]['nama'],
@@ -50,14 +65,12 @@ class AuthController extends Controller
             'role' => $user[0]['role'],
         ];
 
-        Flasher::setFlash("Selamat datang, " . $user[0]['nama'], "success", "Berhasil Masuk!");
-        // if ($user[0]['role'] === 'admin') {
-        //     header("Location: " . BASEURL . "/admin");
-        //     exit;
-        // } else {
-        //     header("Location: " . BASEURL . "/kasir");
-        //     exit;
-        // }
+        Flasher::setFlash(
+            "Selamat datang, " . $user[0]['nama'],
+            "success",
+            "Berhasil Masuk!"
+        );
+
         header("Location: " . BASEURL . "/" . $user[0]['role']);
         exit;
     }

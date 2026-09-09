@@ -22,9 +22,9 @@
           <!-- Profile Toko -->
           <div class="flex gap-2 items-center p-4">
             <div
-              class="w-10 h-10 rounded-xl bg-gray-300 flex items-center justify-center text-xl"
+              class="w-10 h-10 rounded-xl flex items-center justify-center text-xl"
             >
-              T
+              <img src="<?= Helpers::url("/img/logo-rm.png") ?>" alt="" class="w-full h-full object-cover rounded-xl">
             </div>
             <div class="flex flex-col">
               <h2 class="font-bold">RM. Maju Jaya</h2>
@@ -37,7 +37,7 @@
           <nav>
             <ul class="flex flex-col gap-4">
               <li
-                class="w-full flex items-center <?= Helpers::currentUrl() == "/admin" ? "border-l-4 border-lime-600 py-2 pl-6 rounded-xl bg-lime-50 text-lime-600" : "pl-4 text-gray-600" ?>"
+                class="w-full flex items-center <?= parse_url(Helpers::currentUrl(), PHP_URL_PATH) == "/admin" ? "border-l-4 border-lime-600 py-2 pl-6 rounded-xl bg-lime-50 text-lime-600" : "pl-4 text-gray-600" ?>"
               >
                 <a
                   href="<?= Helpers::url('/admin') ?>"
@@ -46,7 +46,7 @@
                 >
               </li>
               <li
-                class="w-full flex items-center <?= Helpers::currentUrl() == "/admin/user" ? "border-l-4 border-lime-600 py-2 pl-6 rounded-xl bg-lime-50 text-lime-600" : "pl-4 text-gray-600" ?>"
+                class="w-full flex items-center <?= parse_url(Helpers::currentUrl(), PHP_URL_PATH) == "/admin/user" ? "border-l-4 border-lime-600 py-2 pl-6 rounded-xl bg-lime-50 text-lime-600" : "pl-4 text-gray-600" ?>"
               >
                 <a
                   href="<?= Helpers::url('/admin/user') ?>"
@@ -55,7 +55,7 @@
                 >
               </li>
               <li
-                class="w-full flex items-center <?= Helpers::currentUrl() == "/admin/menu" ? "border-l-4 border-lime-600 py-2 pl-6 rounded-xl bg-lime-50 text-lime-600" : "pl-4 text-gray-600" ?>"
+                class="w-full flex items-center <?= parse_url(Helpers::currentUrl(), PHP_URL_PATH) == "/admin/menu" ? "border-l-4 border-lime-600 py-2 pl-6 rounded-xl bg-lime-50 text-lime-600" : "pl-4 text-gray-600" ?>"
               >
                 <a
                   href="<?= Helpers::url('/admin/menu') ?>"
@@ -64,7 +64,7 @@
                 >
               </li>
               <li
-                class="w-full flex items-center <?= Helpers::currentUrl() == "/admin/kategori" ? "border-l-4 border-lime-600 py-2 pl-6 rounded-xl bg-lime-50 text-lime-600" : "pl-4 text-gray-600" ?>"
+                class="w-full flex items-center <?= parse_url(Helpers::currentUrl(), PHP_URL_PATH) == "/admin/kategori" ? "border-l-4 border-lime-600 py-2 pl-6 rounded-xl bg-lime-50 text-lime-600" : "pl-4 text-gray-600" ?>"
               >
                 <a
                   href="<?= Helpers::url('/admin/kategori') ?>"
@@ -73,7 +73,7 @@
                 >
               </li>
               <li
-                class="w-full flex items-center <?= Helpers::currentUrl() == "/admin/riwayat-transaksi" ? "border-l-4 border-lime-600 py-2 pl-6 rounded-xl bg-lime-50 text-lime-600" : "pl-4 text-gray-600" ?>"
+                class="w-full flex items-center <?= parse_url(Helpers::currentUrl(), PHP_URL_PATH) == "/admin/riwayat-transaksi" ? "border-l-4 border-lime-600 py-2 pl-6 rounded-xl bg-lime-50 text-lime-600" : "pl-4 text-gray-600" ?>"
               >
                 <a
                   href="<?= Helpers::url('/admin/riwayat-transaksi') ?>"
@@ -93,7 +93,7 @@
             </div>
             <div>
               <h2 class="font-bold"><?= Helpers::firstNameInitial($_SESSION['user']['nama']) ?></h2>
-              <p class="text-xs text-gray-600"><?= $_SESSION['user']['email'] ?></p>
+              <p class="text-xs text-gray-600 w-35 truncate"><?= $_SESSION['user']['email'] ?></p>
             </div>
           </div>
           <!-- End Profile User -->
