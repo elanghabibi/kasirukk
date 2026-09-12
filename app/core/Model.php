@@ -72,6 +72,37 @@ abstract class Model
         return $result;
     }
 
+    public function search($keyword, $columns = [])
+    {
+        if (empty($columns)) {
+            return $this->all();
+        }
+
+        $conditions = [];
+
+        foreach ($columns as $column) {
+            $conditions[] = "{$column} LIKE :keyword";
+        }
+
+        $where = implode(" OR ", $conditions);
+
+        $query = "SELECT *
+                FROM {$this->table}
+                WHERE ({$where})";
+
+        // Hanya tampilkan data aktif jika menggunakan soft delete
+        if ($this->softDelete) {
+            $query .= " AND deleted_at IS NULL";
+        }
+
+        $query .= " ORDER BY id DESC";
+
+        $this->db->query($query);
+        $this->db->bind(":keyword", "%" . $keyword . "%");
+
+        return $this->db->resultSet();
+    }
+
 
     /*
     |--------------------------------------------------------------------------

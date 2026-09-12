@@ -12,6 +12,7 @@ class Menu extends Model {
         "deleted_at"
     ];
 
+    protected $softDelete = true;
 }
 
 

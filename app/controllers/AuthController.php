@@ -25,8 +25,7 @@ class AuthController extends Controller
             $_SESSION['errors'] = $errors;
             $_SESSION['old'] = $_POST;
 
-            header("Location: " . BASEURL . "/login");
-            exit;
+            return $this->redirect("/login");
         }
 
         $user = $this->model("User")->where("email", $_POST['email']);
@@ -39,8 +38,7 @@ class AuthController extends Controller
                 "Gagal"
             );
 
-            header("Location: " . BASEURL . "/login");
-            exit;
+            return $this->redirect("/login");
         }
 
         // Password salah
@@ -53,8 +51,7 @@ class AuthController extends Controller
 
             $_SESSION['old'] = $_POST;
 
-            header("Location: " . BASEURL . "/login");
-            exit;
+            return $this->redirect("/login");
         }
 
         // Login berhasil
@@ -71,8 +68,7 @@ class AuthController extends Controller
             "Berhasil Masuk!"
         );
 
-        header("Location: " . BASEURL . "/" . $user[0]['role']);
-        exit;
+        return $this->redirect("/" . $user[0]['role']);
     }
 
     public function register()

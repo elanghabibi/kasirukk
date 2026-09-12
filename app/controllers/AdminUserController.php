@@ -4,6 +4,7 @@ class AdminUserController extends Controller {
     public function index()
     {
         $status = $_GET['status'] ?? 'aktif';
+        $keyword = trim($_GET['search'] ?? '');
 
         $data["title"] = "Kelola User";
 
@@ -12,11 +13,20 @@ class AdminUserController extends Controller {
         if ($status === 'nonaktif') {
             $users = $userModel->onlyTrashed();
         } else {
-            $users = $userModel->latest();
+            if ($keyword !== '') {
+                $users = $userModel->search($keyword, [
+                    "nama",
+                    "email",
+                    "role"
+                ]);
+            } else {
+                $users = $userModel->latest();
+            }
         }
 
         $data["dataUser"] = $users;
         $data["status"] = $status;
+        $data["keyword"] = $keyword;
 
         $this->view("admin/user/index", $data, "admin");
     }
@@ -46,6 +56,77 @@ class AdminUserController extends Controller {
         } else {
             Flasher::setFlash("Gagal membuat catatan", "error", "Gagal!");
             return $this->redirect("/admin/user");
+        }
+    }
+
+    public function edit($id = null)
+    {
+        if (!$id) {
+            Flasher::setFlash(
+                "User tidak ditemukan",
+                "error",
+                "Gagal Mengedit!"
+            );
+
+            return $this->redirect("/admin/user");
+        }
+
+        $userModel = $this->model("User");
+        $data["user"] = $userModel->find($id);
+
+        if (!$data["user"]) {
+            Flasher::setFlash(
+                "User tidak ditemukan",
+                "error",
+                "Gagal Mengedit!"
+            );
+
+            return $this->redirect("/admin/user");
+        }
+
+        $data["title"] = "Edit User";
+        $this->view("admin/user/edit", $data, "admin");
+    }
+
+    public function update($id = null)
+    {
+        if (!$id) {
+            Flasher::setFlash(
+                "User tidak ditemukan",
+                "error",
+                "Gagal Mengedit!"
+            );
+
+            return $this->redirect("/admin/user");
+        }
+
+        $errors = Validator::validate($_POST, [
+            "nama" => "required",
+            "email" => "required",
+            "role" => "required"
+        ]);
+
+        if (!empty($errors)) {
+            $_SESSION['errors'] = $errors;
+            $_SESSION['old'] = $_POST;
+
+            return $this->redirect("/admin/user/edit/$id");
+        }
+
+        $userModel = $this->model("User");
+
+        if (!empty($_POST['password'])) {
+            $_POST['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
+        } else {
+            unset($_POST['password']);
+        }
+
+        if ($userModel->update($_POST, $id) > 0) {
+            Flasher::setFlash("User berhasil diubah!");
+            return $this->redirect("/admin/user");
+        } else {
+            Flasher::setFlash("Gagal mengubah user", "error", "Gagal!");
+            return $this->redirect("/admin/user/edit/$id");
         }
     }
 
