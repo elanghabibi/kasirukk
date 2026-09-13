@@ -1,6 +1,7 @@
 <?php
 
-class App {
+class App
+{
     protected $controller = "HomeController";
     protected $method = "index";
     protected $params = [];
@@ -14,38 +15,44 @@ class App {
 
     private const DEFAULT_GET = "GET";
     private const DEFAULT_POST = "POST";
-    
-    public function setDefaultConstroller($controller) {
+
+    public function setDefaultConstroller($controller)
+    {
         $this->controller = $controller;
     }
 
-    public function setDefaultMethod($method) {
+    public function setDefaultMethod($method)
+    {
         $this->method = $method;
     }
 
-    public function get($uri, $callback, $middleware = []) {
+    public function get($uri, $callback, $middleware = [])
+    {
         $this->setHandler(self::DEFAULT_GET, $uri, $callback, $middleware);
     }
 
-    public function post($uri, $callback, $middleware = []) {
-        $this->setHandler(self::DEFAULT_POST, $uri, $callback, $middleware);     
+    public function post($uri, $callback, $middleware = [])
+    {
+        $this->setHandler(self::DEFAULT_POST, $uri, $callback, $middleware);
     }
 
-    public function setHandler(string $method, string $path, $handler, $middleware) {
+    public function setHandler(string $method, string $path, $handler, $middleware)
+    {
         $this->handlers[$method . $path] = [
             "method" => $method,
-            "path"=> $path,
-            "handler"=> $handler,
-            "middleware"=> $middleware
+            "path" => $path,
+            "handler" => $handler,
+            "middleware" => $middleware
         ];
     }
 
-    public function run() {
+    public function run()
+    {
         $routeFound = false;
         $url = $this->parseURL();
         $requestMethod = $_SERVER['REQUEST_METHOD'];
         $uri = "/" . implode("/", $url);
-        
+
         foreach ($this->handlers as $handler) {
             if ($requestMethod !== $handler['method']) continue;
 
@@ -89,34 +96,30 @@ class App {
     }
 
     public function parseURL()
-{
-    $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    {
+        $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-    $url = trim($url, "/");
+        $basePath = parse_url(BASEURL, PHP_URL_PATH) ?? '';
 
-    if ($url === "") {
-        return [];
+        if ($basePath !== '' && str_starts_with($url, $basePath)) {
+            $url = substr($url, strlen($basePath));
+        }
+
+        $url = trim($url, '/');
+
+        if ($url === '') {
+            return [];
+        }
+
+        $url = filter_var($url, FILTER_SANITIZE_URL);
+
+        return explode('/', $url);
     }
 
-    $url = filter_var($url, FILTER_SANITIZE_URL);
-
-    return explode("/", $url);
-}
-
-    private function call404() {
+    private function call404()
+    {
         require_once "../app/controllers/ErrorController.php";
         $error = new ErrorController();
         $error->notFound();
     }
-
 }
-
-
-
-
-
-
-
-
-
-?>

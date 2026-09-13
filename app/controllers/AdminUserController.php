@@ -1,34 +1,47 @@
 <?php
 
-class AdminUserController extends Controller {
+class AdminUserController extends Controller
+{
     public function index()
     {
         $status = $_GET['status'] ?? 'aktif';
         $keyword = trim($_GET['search'] ?? '');
+        $page = max(1, (int) ($_GET['page'] ?? 1));
 
-        $data["title"] = "Kelola User";
+        $data['title'] = 'Kelola User';
 
-        $userModel = $this->model("User");
+        $userModel = $this->model('User');
 
-        if ($status === 'nonaktif') {
-            $users = $userModel->onlyTrashed();
-        } else {
-            if ($keyword !== '') {
-                $users = $userModel->search($keyword, [
-                    "nama",
-                    "email",
-                    "role"
-                ]);
-            } else {
-                $users = $userModel->latest();
-            }
+        // Tentukan status soft delete
+        $trashedMode = $status === 'nonaktif'
+            ? 'onlyTrashed'
+            : 'active';
+
+        // Tambahkan search jika ada keyword
+        if ($keyword !== '') {
+            $userModel->search(
+                $keyword,
+                ['nama', 'email', 'role']
+            );
         }
 
-        $data["dataUser"] = $users;
-        $data["status"] = $status;
-        $data["keyword"] = $keyword;
+        // Ambil data dengan pagination
+        $pagination = $userModel->paginate(
+            10,
+            $page,
+            $trashedMode
+        );
 
-        $this->view("admin/user/index", $data, "admin");
+        $data['dataUser'] = $pagination['data'];
+        $data['pagination'] = $pagination;
+        $data['status'] = $status;
+        $data['keyword'] = $keyword;
+
+        $this->view(
+            'admin/user/index',
+            $data,
+            'admin'
+        );
     }
 
     public function store()
@@ -233,6 +246,3 @@ class AdminUserController extends Controller {
         return $this->redirect("/admin/user");
     }
 }
-
-
-?>

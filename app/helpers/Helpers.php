@@ -22,13 +22,13 @@ class Helpers
         if ($name === '' || $limit <= 0) {
             return '';
         }
-        
+
         $words = preg_split('/\s+/', $name);
         $initials = '';
-        
+
         foreach (array_slice($words, 0, $limit) as $word) {
             $initials .= strtoupper(substr($word, 0, 1));
-        } 
+        }
         return $initials;
     }
 
@@ -447,27 +447,34 @@ class Helpers
      */
     public static function currentUrl(): string
     {
-        return $_SERVER['REQUEST_URI'] ?? '/';
+        $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+        $basePath = parse_url(BASEURL, PHP_URL_PATH) ?? '';
+
+        if ($basePath !== '' && str_starts_with($url, $basePath)) {
+            $url = substr($url, strlen($basePath));
+        }
+
+        return '/' . trim($url, '/');
     }
 
     public static function currentMonthNameId()
-{
-    $months = [
-        1 => 'Januari',
-        2 => 'Februari',
-        3 => 'Maret',
-        4 => 'April',
-        5 => 'Mei',
-        6 => 'Juni',
-        7 => 'Juli',
-        8 => 'Agustus',
-        9 => 'September',
-        10 => 'Oktober',
-        11 => 'November',
-        12 => 'Desember',
-    ];
+    {
+        $months = [
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember',
+        ];
 
-    return $months[(int) date('n')];
+        return $months[(int) date('n')];
+    }
 }
-}
-

@@ -1,6 +1,7 @@
 <?php
 
 define("BASEURL", "http://kasirukk.test");
+// define("BASEURL", "http://localhost/kasirukk/public");
 
 // DB CONFIG
 define("DB_HOST", "localhost");

@@ -6,9 +6,6 @@ class Kategori extends Model {
         "nama",
     ];
     protected $softDelete = true;
-
-
-
 }
 
 

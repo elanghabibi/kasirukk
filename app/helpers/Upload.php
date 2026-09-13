@@ -42,6 +42,6 @@ class Upload
             return null;
         }
 
-        return '/' . $folder . '/' . $fileName;
+        return $folder . '/' . $fileName;
     }
 }
