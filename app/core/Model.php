@@ -5,12 +5,15 @@ abstract class Model
     protected $table;
     protected $fillable = [];
 
-    // Aktifkan pada model yang ingin menggunakan soft delete
+    // Soft delete
     protected $softDelete = false;
+    protected $trashedMode = 'active';
 
+    // Database
     protected $db;
-    protected $select = '*';
 
+    // Query Builder
+    protected $select = '*';
     protected $joins = [];
     protected $where = [];
     protected $bindings = [];
@@ -20,12 +23,19 @@ abstract class Model
         $this->db = new Database();
     }
 
+
     /*
-    /--------------------------------------
-    / JOIN
-    /-----------------------------
+    |--------------------------------------------------------------------------
+    | QUERY BUILDER
+    |--------------------------------------------------------------------------
     */
 
+
+    /**
+     * SELECT
+     *
+     * select('users.*, roles.nama AS nama_role')
+     */
     public function select($columns)
     {
         $this->select = $columns;
@@ -33,12 +43,35 @@ abstract class Model
         return $this;
     }
 
+
+    /**
+     * JOIN
+     *
+     * join(
+     *     'kategori',
+     *     'kategori.id = menu.kategori_id'
+     * )
+     */
     public function join($table, $condition, $type = 'LEFT')
     {
+        $allowedTypes = [
+            'LEFT',
+            'RIGHT',
+            'INNER',
+            'FULL'
+        ];
+
+        $type = strtoupper($type);
+
+        if (!in_array($type, $allowedTypes)) {
+            $type = 'LEFT';
+        }
+
         $this->joins[] = "{$type} JOIN {$table} ON {$condition}";
 
         return $this;
     }
+
 
     protected function getJoins()
     {
@@ -47,24 +80,229 @@ abstract class Model
             : ' ' . implode(' ', $this->joins);
     }
 
+
+    /**
+     * WHERE
+     *
+     * where('role', 'admin')
+     *
+     * where('harga', '>', 10000)
+     */
+    public function where($column, $operator, $value = null)
+    {
+        // where('role', 'admin')
+        if ($value === null) {
+            $value = $operator;
+            $operator = '=';
+        }
+
+        $operator = strtoupper(trim($operator));
+
+        $allowedOperators = [
+            '=',
+            '!=',
+            '<>',
+            '>',
+            '<',
+            '>=',
+            '<=',
+            'LIKE',
+            'NOT LIKE'
+        ];
+
+        if (!in_array($operator, $allowedOperators)) {
+            throw new InvalidArgumentException(
+                "Operator WHERE tidak valid: {$operator}"
+            );
+        }
+
+        $placeholder = ':where_' . count($this->bindings);
+
+        $this->where[] =
+            "{$this->table}.{$column} {$operator} {$placeholder}";
+
+        $this->bindings[$placeholder] = $value;
+
+        return $this;
+    }
+
+
+    /**
+     * WHERE IN
+     *
+     * whereIn('id', [1, 2, 3])
+     */
+    public function whereIn($column, array $values)
+    {
+        if (empty($values)) {
+            // Supaya tidak mengambil semua data.
+            $this->where[] = '1 = 0';
+
+            return $this;
+        }
+
+        $placeholders = [];
+
+        foreach ($values as $index => $value) {
+            $placeholder = ':where_in_' . count($this->bindings);
+
+            $placeholders[] = $placeholder;
+
+            $this->bindings[$placeholder] = $value;
+        }
+
+        $this->where[] =
+            "{$this->table}.{$column} IN (" .
+            implode(', ', $placeholders) .
+            ")";
+
+        return $this;
+    }
+
+
+    /**
+     * WHERE NULL
+     *
+     * whereNull('deleted_at')
+     */
+    public function whereNull($column)
+    {
+        $this->where[] =
+            "{$this->table}.{$column} IS NULL";
+
+        return $this;
+    }
+
+
+    /**
+     * WHERE NOT NULL
+     *
+     * whereNotNull('deleted_at')
+     */
+    public function whereNotNull($column)
+    {
+        $this->where[] =
+            "{$this->table}.{$column} IS NOT NULL";
+
+        return $this;
+    }
+
+
+    /**
+     * SEARCH
+     *
+     * search('kopi', ['nama', 'email'])
+     */
+    public function search($keyword, $columns = [])
+    {
+        if (empty($columns)) {
+            return $this;
+        }
+
+        $conditions = [];
+
+        foreach ($columns as $index => $column) {
+            $placeholder =
+                ':keyword_' . count($this->bindings);
+
+            $conditions[] =
+                "{$this->table}.{$column} LIKE {$placeholder}";
+
+            $this->bindings[$placeholder] =
+                "%{$keyword}%";
+        }
+
+        $this->where[] =
+            '(' . implode(' OR ', $conditions) . ')';
+
+        return $this;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | SOFT DELETE
+    |--------------------------------------------------------------------------
+    */
+
+
+    protected function getSoftDeleteCondition()
+    {
+        if (!$this->softDelete) {
+            return '';
+        }
+
+        if ($this->trashedMode === 'active') {
+            return "{$this->table}.deleted_at IS NULL";
+        }
+
+        if ($this->trashedMode === 'onlyTrashed') {
+            return "{$this->table}.deleted_at IS NOT NULL";
+        }
+
+        // withTrashed
+        return '';
+    }
+
+
+    public function onlyTrashed()
+    {
+        $this->trashedMode = 'onlyTrashed';
+
+        return $this;
+    }
+
+
+    public function withTrashed()
+    {
+        $this->trashedMode = 'withTrashed';
+
+        return $this;
+    }
+
+
+    protected function addSoftDeleteCondition()
+    {
+        $condition = $this->getSoftDeleteCondition();
+
+        if ($condition) {
+            $this->where[] = $condition;
+        }
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | EXECUTOR
+    |--------------------------------------------------------------------------
+    */
+
+
+    /**
+     * GET
+     *
+     * Mengambil banyak data.
+     */
     public function get()
     {
+        $this->addSoftDeleteCondition();
+
         $query = "SELECT {$this->select}
-              FROM {$this->table}";
+                  FROM {$this->table}";
 
         $query .= $this->getJoins();
 
         if (!empty($this->where)) {
-            $query .= " WHERE " . implode(' AND ', $this->where);
+            $query .= " WHERE " .
+                implode(' AND ', $this->where);
         }
 
-        $query .= " ORDER BY {$this->table}.created_at DESC";
+        // $query .=
+        //     " ORDER BY {$this->table}.created_at DESC";
 
         $this->db->query($query);
 
-        foreach ($this->bindings as $key => $value) {
-            $this->db->bind($key, $value);
-        }
+        $this->bindParameters();
 
         $result = $this->db->resultSet();
 
@@ -73,55 +311,31 @@ abstract class Model
         return $result;
     }
 
-    protected function resetQuery()
-    {
-        $this->select = '*';
-        $this->where = [];
-        $this->joins = [];
-        $this->bindings = [];
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | BASIC
-    |--------------------------------------------------------------------------
-    */
 
     /**
-     * Mengambil semua data aktif.
+     * FIRST
+     *
+     * Mengambil satu data pertama.
      */
-    public function all()
+    public function first()
     {
-        $query = "SELECT * FROM {$this->table}";
+        $this->addSoftDeleteCondition();
 
-        if ($this->softDelete) {
-            $query .= " WHERE deleted_at IS NULL";
-        }
-
-        $this->db->query($query);
-
-        return $this->db->resultSet();
-    }
-
-
-    /**
-     * Mengambil satu data berdasarkan ID.
-     */
-    public function find($id)
-    {
         $query = "SELECT {$this->select}
-              FROM {$this->table}";
+                  FROM {$this->table}";
 
         $query .= $this->getJoins();
 
-        $query .= " WHERE {$this->table}.id = :id";
-
-        if ($this->softDelete) {
-            $query .= " AND {$this->table}.deleted_at IS NULL";
+        if (!empty($this->where)) {
+            $query .= " WHERE " .
+                implode(' AND ', $this->where);
         }
 
+        $query .= " LIMIT 1";
+
         $this->db->query($query);
-        $this->db->bind(':id', $id);
+
+        $this->bindParameters();
 
         $result = $this->db->single();
 
@@ -132,114 +346,20 @@ abstract class Model
 
 
     /**
-     * Find atau 404.
-     */
-    public function findOrFail($id)
-    {
-        $result = $this->find($id);
-
-        if (!$result) {
-            http_response_code(404);
-            exit('404 Not Found');
-        }
-
-        return $result;
-    }
-
-    public function search($keyword, $columns = [])
-    {
-        if (empty($columns)) {
-            return $this;
-        }
-
-        $conditions = [];
-
-        foreach ($columns as $index => $column) {
-            $placeholder = ":keyword{$index}";
-
-            $conditions[] = "{$this->table}.{$column} LIKE {$placeholder}";
-
-            $this->bindings[$placeholder] = "%{$keyword}%";
-        }
-
-        $where = '(' . implode(' OR ', $conditions) . ')';
-
-        $this->where[] = $where;
-
-        return $this;
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | WHERE
-    |--------------------------------------------------------------------------
-    */
-
-    /**
-     * WHERE sederhana.
-     *
-     * where('role', 'admin')
-     */
-    public function where($column, $operator, $value = null)
-    {
-        if ($value === null) {
-            $value = $operator;
-            $operator = '=';
-        }
-
-        $this->where[] = "{$column} {$operator} :where_" . count($this->bindings);
-
-        $this->bindings[':where_' . count($this->bindings)] = $value;
-
-        return $this;
-    }
-
-
-    /**
-     * WHERE + FIRST.
+     * FIRST WHERE
      *
      * firstWhere('email', 'test@gmail.com')
      */
     public function firstWhere($column, $value)
     {
-        $query = "SELECT * FROM {$this->table}
-                  WHERE {$column} = :value";
-
-        if ($this->softDelete) {
-            $query .= " AND deleted_at IS NULL";
-        }
-
-        $query .= " LIMIT 1";
-
-        $this->db->query($query);
-        $this->db->bind("value", $value);
-
-        return $this->db->single();
+        return $this
+            ->where($column, $value)
+            ->first();
     }
 
 
     /**
-     * Mengambil satu data pertama.
-     */
-    public function first()
-    {
-        $query = "SELECT * FROM {$this->table}";
-
-        if ($this->softDelete) {
-            $query .= " WHERE deleted_at IS NULL";
-        }
-
-        $query .= " LIMIT 1";
-
-        $this->db->query($query);
-
-        return $this->db->single();
-    }
-
-
-    /**
-     * First atau 404.
+     * FIRST OR FAIL
      */
     public function firstOrFail()
     {
@@ -247,26 +367,394 @@ abstract class Model
 
         if (!$result) {
             http_response_code(404);
+
             exit('404 Not Found');
         }
 
         return $result;
     }
 
-    // Hitung total dari kolom tertentu bulan ini
-    public function sumThisMonth($column, $dateColumn = 'created_at')
-    {
-        $query = "SELECT SUM({$column}) AS total
-              FROM {$this->table}
-              WHERE {$column} IS NOT NULL
-              AND {$dateColumn} >= DATE_FORMAT(CURDATE(), '%Y-%m-01')
-              AND {$dateColumn} < DATE_FORMAT(
-                  CURDATE() + INTERVAL 1 MONTH,
-                  '%Y-%m-01'
-              )";
 
-        if ($this->softDelete) {
-            $query .= " AND deleted_at IS NULL";
+    /**
+     * FIND
+     *
+     * find(10)
+     *
+     * Bisa digunakan:
+     *
+     * $menuModel
+     *     ->withKategori()
+     *     ->find($id);
+     */
+    public function find($id)
+    {
+        return $this
+            ->where('id', $id)
+            ->first();
+    }
+
+
+    /**
+     * FIND OR FAIL
+     */
+    public function findOrFail($id)
+    {
+        $result = $this->find($id);
+
+        if (!$result) {
+            http_response_code(404);
+
+            exit('404 Not Found');
+        }
+
+        return $result;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | BASIC
+    |--------------------------------------------------------------------------
+    */
+
+
+    /**
+     * ALL
+     *
+     * Mengambil semua data aktif.
+     */
+    public function all()
+    {
+        return $this->get();
+    }
+
+
+    /**
+     * LATEST
+     */
+    public function latest()
+    {
+        return $this->get();
+    }
+
+
+    /**
+     * OLDEST
+     */
+    public function oldest($column = 'created_at')
+    {
+        $this->addSoftDeleteCondition();
+
+        $query = "SELECT {$this->select}
+                  FROM {$this->table}";
+
+        $query .= $this->getJoins();
+
+        if (!empty($this->where)) {
+            $query .= " WHERE " .
+                implode(' AND ', $this->where);
+        }
+
+        $query .=
+            " ORDER BY {$this->table}.{$column} ASC";
+
+        $this->db->query($query);
+
+        $this->bindParameters();
+
+        $result = $this->db->resultSet();
+
+        $this->resetQuery();
+
+        return $result;
+    }
+
+
+    /**
+     * ORDER BY
+     */
+    public function orderBy($column, $direction = 'ASC')
+    {
+        $allowedDirection = [
+            'ASC',
+            'DESC'
+        ];
+
+        $direction = strtoupper($direction);
+
+        if (!in_array($direction, $allowedDirection)) {
+            $direction = 'ASC';
+        }
+
+        $this->addSoftDeleteCondition();
+
+        $query = "SELECT {$this->select}
+                  FROM {$this->table}";
+
+        $query .= $this->getJoins();
+
+        if (!empty($this->where)) {
+            $query .= " WHERE " .
+                implode(' AND ', $this->where);
+        }
+
+        $query .=
+            " ORDER BY {$this->table}.{$column} {$direction}";
+
+        $this->db->query($query);
+
+        $this->bindParameters();
+
+        $result = $this->db->resultSet();
+
+        $this->resetQuery();
+
+        return $result;
+    }
+
+
+    /**
+     * LIMIT
+     */
+    public function limit($limit)
+    {
+        $limit = max(1, (int) $limit);
+
+        $this->addSoftDeleteCondition();
+
+        $query = "SELECT {$this->select}
+                  FROM {$this->table}";
+
+        $query .= $this->getJoins();
+
+        if (!empty($this->where)) {
+            $query .= " WHERE " .
+                implode(' AND ', $this->where);
+        }
+
+        $query .= " LIMIT {$limit}";
+
+        $this->db->query($query);
+
+        $this->bindParameters();
+
+        $result = $this->db->resultSet();
+
+        $this->resetQuery();
+
+        return $result;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | PAGINATION
+    |--------------------------------------------------------------------------
+    */
+
+
+    public function paginate(
+        $perPage = 10,
+        $page = 1
+    ) {
+        $perPage = max(1, (int) $perPage);
+        $page = max(1, (int) $page);
+
+        $offset = ($page - 1) * $perPage;
+
+        $this->addSoftDeleteCondition();
+
+        $fromQuery =
+            "FROM {$this->table}" .
+            $this->getJoins();
+
+        $whereQuery = '';
+
+        if (!empty($this->where)) {
+            $whereQuery =
+                " WHERE " .
+                implode(' AND ', $this->where);
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | COUNT
+        |--------------------------------------------------------------------------
+        */
+
+        $countQuery =
+            "SELECT COUNT(*) AS total
+             {$fromQuery}
+             {$whereQuery}";
+
+        $this->db->query($countQuery);
+
+        $this->bindParameters();
+
+        $countResult = $this->db->single();
+
+        $total = (int) ($countResult['total'] ?? 0);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | DATA
+        |--------------------------------------------------------------------------
+        */
+
+        $dataQuery =
+            "SELECT {$this->select}
+             {$fromQuery}
+             {$whereQuery}
+             ORDER BY {$this->table}.created_at DESC
+             LIMIT {$perPage}
+             OFFSET {$offset}";
+
+        $this->db->query($dataQuery);
+
+        $this->bindParameters();
+
+        $data = $this->db->resultSet();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | RESULT
+        |--------------------------------------------------------------------------
+        */
+
+        $totalPages = $total > 0
+            ? (int) ceil($total / $perPage)
+            : 0;
+
+        $result = [
+            'data' => $data,
+            'total' => $total,
+            'perPage' => $perPage,
+            'currentPage' => $page,
+            'totalPages' => $totalPages,
+            'from' => $total > 0
+                ? $offset + 1
+                : 0,
+            'to' => min(
+                $offset + $perPage,
+                $total
+            ),
+            'hasNextPage' => $page < $totalPages,
+            'hasPreviousPage' => $page > 1,
+        ];
+
+        $this->resetQuery();
+
+        return $result;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | COUNT & EXISTS
+    |--------------------------------------------------------------------------
+    */
+
+
+    public function count($column = null, $value = null)
+    {
+        $this->addSoftDeleteCondition();
+
+        if ($column !== null) {
+            $this->where(
+                $column,
+                $value
+            );
+        }
+
+        $query =
+            "SELECT COUNT(*) AS total
+             FROM {$this->table}";
+
+        if (!empty($this->where)) {
+            $query .=
+                " WHERE " .
+                implode(' AND ', $this->where);
+        }
+
+        $this->db->query($query);
+
+        $this->bindParameters();
+
+        $result = $this->db->single();
+
+        $this->resetQuery();
+
+        return (int) ($result['total'] ?? 0);
+    }
+
+
+    public function exists($column, $value)
+    {
+        return $this
+            ->where($column, $value)
+            ->first() !== false;
+    }
+
+
+    public function countThisMonth(
+        $column = 'created_at'
+    ) {
+        $query =
+            "SELECT COUNT(*) AS total
+             FROM {$this->table}
+             WHERE {$this->table}.{$column}
+             >= DATE_FORMAT(
+                 CURDATE(),
+                 '%Y-%m-01'
+             )
+             AND {$this->table}.{$column}
+             < DATE_FORMAT(
+                 CURDATE() + INTERVAL 1 MONTH,
+                 '%Y-%m-01'
+             )";
+
+        $softDelete =
+            $this->getSoftDeleteCondition();
+
+        if ($softDelete) {
+            $query .= " AND {$softDelete}";
+        }
+
+        $this->db->query($query);
+
+        $result = $this->db->single();
+
+        return (int) ($result['total'] ?? 0);
+    }
+
+
+    public function sumThisMonth(
+        $column,
+        $dateColumn = 'created_at'
+    ) {
+        $query =
+            "SELECT SUM({$this->table}.{$column}) AS total
+             FROM {$this->table}
+             WHERE {$this->table}.{$column} IS NOT NULL
+             AND {$this->table}.{$dateColumn}
+             >= DATE_FORMAT(
+                 CURDATE(),
+                 '%Y-%m-01'
+             )
+             AND {$this->table}.{$dateColumn}
+             < DATE_FORMAT(
+                 CURDATE() + INTERVAL 1 MONTH,
+                 '%Y-%m-01'
+             )";
+
+        $softDelete =
+            $this->getSoftDeleteCondition();
+
+        if ($softDelete) {
+            $query .= " AND {$softDelete}";
         }
 
         $this->db->query($query);
@@ -279,105 +767,11 @@ abstract class Model
 
     /*
     |--------------------------------------------------------------------------
-    | COUNT & EXISTS
-    |--------------------------------------------------------------------------
-    */
-
-    /**
-     * Menghitung jumlah data aktif.
-     *
-     * count()
-     * count('role', 'admin')
-     */
-    public function count($column = null, $value = null)
-    {
-        $query = "SELECT COUNT(*) AS total
-                  FROM {$this->table}";
-
-        $conditions = [];
-
-        if ($this->softDelete) {
-            $conditions[] = "deleted_at IS NULL";
-        }
-
-        if ($column !== null) {
-            $conditions[] = "{$column} = :value";
-        }
-
-        if (!empty($conditions)) {
-            $query .= " WHERE " . implode(" AND ", $conditions);
-        }
-
-        $this->db->query($query);
-
-        if ($column !== null) {
-            $this->db->bind("value", $value);
-        }
-
-        $result = $this->db->single();
-
-        return (int) $result['total'];
-    }
-
-    public function countThisMonth($column = 'created_at')
-    {
-        $query = "SELECT COUNT(*) AS total
-                FROM {$this->table}
-                WHERE {$column} >= DATE_FORMAT(CURDATE(), '%Y-%m-01')
-                AND {$column} < DATE_FORMAT(
-                    CURDATE() + INTERVAL 1 MONTH,
-                    '%Y-%m-01'
-                )";
-
-        if ($this->softDelete) {
-            $query .= " AND deleted_at IS NULL";
-        }
-
-        $this->db->query($query);
-
-        $result = $this->db->single();
-
-        return (int) $result['total'];
-    }
-
-    /**
-     * Mengecek apakah data ada.
-     *
-     * exists('email', 'test@gmail.com')
-     */
-    public function exists($column, $value)
-    {
-        $query = "SELECT COUNT(*) AS total
-                  FROM {$this->table}
-                  WHERE {$column} = :value";
-
-        if ($this->softDelete) {
-            $query .= " AND deleted_at IS NULL";
-        }
-
-        $this->db->query($query);
-        $this->db->bind("value", $value);
-
-        $result = $this->db->single();
-
-        return (int) $result['total'] > 0;
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
     | CREATE
     |--------------------------------------------------------------------------
     */
 
-    /**
-     * Membuat data baru.
-     *
-     * store([
-     *     'name' => 'Es Kopi',
-     *     'price' => 10000
-     * ]);
-     */
+
     public function store($data)
     {
         $fields = array_intersect_key(
@@ -389,12 +783,17 @@ abstract class Model
             return 0;
         }
 
-        $columns = implode(", ", array_keys($fields));
-        $params = ":" . implode(", :", array_keys($fields));
+        $columns =
+            implode(', ', array_keys($fields));
 
-        $query = "INSERT INTO {$this->table}
-                  ({$columns}, created_at)
-                  VALUES ({$params}, NOW())";
+        $params =
+            ':' .
+            implode(', :', array_keys($fields));
+
+        $query =
+            "INSERT INTO {$this->table}
+             ({$columns}, created_at)
+             VALUES ({$params}, NOW())";
 
         $this->db->query($query);
 
@@ -414,9 +813,7 @@ abstract class Model
     |--------------------------------------------------------------------------
     */
 
-    /**
-     * Update berdasarkan ID.
-     */
+
     public function update($data, $id)
     {
         $fields = array_intersect_key(
@@ -434,11 +831,14 @@ abstract class Model
             $set[] = "{$key} = :{$key}";
         }
 
-        $setClause = implode(", ", $set);
+        $setClause =
+            implode(', ', $set);
 
-        $query = "UPDATE {$this->table}
-                  SET {$setClause}, updated_at = NOW()
-                  WHERE id = :id";
+        $query =
+            "UPDATE {$this->table}
+             SET {$setClause},
+                 updated_at = NOW()
+             WHERE id = :id";
 
         $this->db->query($query);
 
@@ -446,7 +846,7 @@ abstract class Model
             $this->db->bind($key, $value);
         }
 
-        $this->db->bind("id", $id);
+        $this->db->bind('id', $id);
 
         $this->db->execute();
 
@@ -460,16 +860,19 @@ abstract class Model
     |--------------------------------------------------------------------------
     */
 
+
     /**
-     * Hard delete.
+     * Hard delete
      */
     public function destroy($id)
     {
-        $query = "DELETE FROM {$this->table}
-                  WHERE id = :id";
+        $query =
+            "DELETE FROM {$this->table}
+             WHERE id = :id";
 
         $this->db->query($query);
-        $this->db->bind("id", $id);
+
+        $this->db->bind('id', $id);
 
         $this->db->execute();
 
@@ -477,14 +880,8 @@ abstract class Model
     }
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | SOFT DELETE
-    |--------------------------------------------------------------------------
-    */
-
     /**
-     * Soft delete.
+     * Soft delete
      */
     public function softDelete($id)
     {
@@ -492,13 +889,15 @@ abstract class Model
             return $this->destroy($id);
         }
 
-        $query = "UPDATE {$this->table}
-                  SET deleted_at = NOW()
-                  WHERE id = :id
-                  AND deleted_at IS NULL";
+        $query =
+            "UPDATE {$this->table}
+             SET deleted_at = NOW()
+             WHERE id = :id
+             AND deleted_at IS NULL";
 
         $this->db->query($query);
-        $this->db->bind("id", $id);
+
+        $this->db->bind('id', $id);
 
         $this->db->execute();
 
@@ -507,7 +906,7 @@ abstract class Model
 
 
     /**
-     * Restore data yang sudah di-soft delete.
+     * Restore
      */
     public function restore($id)
     {
@@ -515,14 +914,16 @@ abstract class Model
             return 0;
         }
 
-        $query = "UPDATE {$this->table}
-                  SET deleted_at = NULL,
-                      updated_at = NOW()
-                  WHERE id = :id
-                  AND deleted_at IS NOT NULL";
+        $query =
+            "UPDATE {$this->table}
+             SET deleted_at = NULL,
+                 updated_at = NOW()
+             WHERE id = :id
+             AND deleted_at IS NOT NULL";
 
         $this->db->query($query);
-        $this->db->bind("id", $id);
+
+        $this->db->bind('id', $id);
 
         $this->db->execute();
 
@@ -530,331 +931,29 @@ abstract class Model
     }
 
 
-
     /*
     |--------------------------------------------------------------------------
-    | WHERE IN
+    | HELPER
     |--------------------------------------------------------------------------
     */
 
-    /**
-     * WHERE IN.
-     *
-     * whereIn('id', [1, 2, 3])
-     */
-    public function whereIn($column, array $values)
+
+    protected function bindParameters()
     {
-        if (empty($values)) {
-            return [];
-        }
-
-        $placeholders = [];
-
-        foreach ($values as $index => $value) {
-            $placeholders[] = ":value{$index}";
-        }
-
-        $query = "SELECT * FROM {$this->table}
-                  WHERE {$column} IN (" .
-            implode(", ", $placeholders) .
-            ")";
-
-        if ($this->softDelete) {
-            $query .= " AND deleted_at IS NULL";
-        }
-
-        $this->db->query($query);
-
-        foreach ($values as $index => $value) {
-            $this->db->bind("value{$index}", $value);
-        }
-
-        return $this->db->resultSet();
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | NULL
-    |--------------------------------------------------------------------------
-    */
-
-    /**
-     * WHERE column IS NULL.
-     */
-    public function whereNull($column)
-    {
-        $query = "SELECT * FROM {$this->table}
-                  WHERE {$column} IS NULL";
-
-        if ($this->softDelete) {
-            $query .= " AND deleted_at IS NULL";
-        }
-
-        $this->db->query($query);
-
-        return $this->db->resultSet();
-    }
-
-
-    /**
-     * WHERE column IS NOT NULL.
-     */
-    public function whereNotNull($column)
-    {
-        $query = "SELECT * FROM {$this->table}
-                  WHERE {$column} IS NOT NULL";
-
-        if ($this->softDelete) {
-            $query .= " AND deleted_at IS NULL";
-        }
-
-        $this->db->query($query);
-
-        return $this->db->resultSet();
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | ORDER
-    |--------------------------------------------------------------------------
-    */
-
-    /**
-     * Mengurutkan data.
-     *
-     * orderBy('name', 'ASC')
-     */
-    public function orderBy($column, $direction = 'ASC', $trashed = 'active')
-    {
-        $allowedDirection = ['ASC', 'DESC'];
-        $direction = strtoupper($direction);
-
-        if (!in_array($direction, $allowedDirection)) {
-            $direction = 'ASC';
-        }
-
-        $query = "SELECT {$this->select}
-              FROM {$this->table}";
-
-        $query .= $this->getJoins();
-
-        // Soft delete
-        if ($this->softDelete) {
-
-            if ($trashed === 'active') {
-                $query .= " WHERE {$this->table}.deleted_at IS NULL";
-            } elseif ($trashed === 'onlyTrashed') {
-                $query .= " WHERE {$this->table}.deleted_at IS NOT NULL";
-            } elseif ($trashed === 'withTrashed') {
-                // Tidak menambahkan WHERE deleted_at
-            }
-        }
-
-        $query .= " ORDER BY {$column} {$direction}";
-
-        $this->db->query($query);
-
-        $result = $this->db->resultSet();
-
-        $this->resetQuery();
-
-        return $result;
-    }
-
-
-    /**
-     * Data terbaru.
-     */
-    public function latest($trashed = 'active')
-    {
-        $query = "SELECT {$this->select}
-              FROM {$this->table}";
-
-        $query .= $this->getJoins();
-
-        // Soft delete
-        if ($this->softDelete) {
-
-            if ($trashed === 'active') {
-                $this->where[] = "{$this->table}.deleted_at IS NULL";
-            } elseif ($trashed === 'onlyTrashed') {
-                $this->where[] = "{$this->table}.deleted_at IS NOT NULL";
-            }
-
-            // withTrashed → tidak menambahkan kondisi deleted_at
-        }
-
-        if (!empty($this->where)) {
-            $query .= " WHERE " . implode(' AND ', $this->where);
-        }
-
-        $query .= " ORDER BY {$this->table}.created_at DESC";
-
-        $this->db->query($query);
-
         foreach ($this->bindings as $key => $value) {
             $this->db->bind($key, $value);
         }
-
-        $result = $this->db->resultSet();
-
-        $this->resetQuery();
-
-        return $result;
     }
 
 
-    /**
-     * Data terlama.
-     */
-    public function oldest($column = 'created_at')
+    protected function resetQuery()
     {
-        return $this->orderBy($column, 'ASC');
-    }
+        $this->select = '*';
+        $this->joins = [];
+        $this->where = [];
+        $this->bindings = [];
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | LIMIT
-    |--------------------------------------------------------------------------
-    */
-
-    /**
-     * Mengambil sejumlah data.
-     *
-     * limit(10)
-     */
-    public function limit($limit)
-    {
-        $limit = (int) $limit;
-
-        if ($limit <= 0) {
-            return [];
-        }
-
-        $query = "SELECT * FROM {$this->table}";
-
-        if ($this->softDelete) {
-            $query .= " WHERE deleted_at IS NULL";
-        }
-
-        $query .= " LIMIT {$limit}";
-
-        $this->db->query($query);
-
-        return $this->db->resultSet();
-    }
-
-    public function paginate($perPage = 10, $page = 1, $trashed = null)
-    {
-        $perPage = max(1, (int) $perPage);
-        $page = max(1, (int) $page);
-
-        // Jika parameter tidak diberikan,
-        // gunakan mode soft delete dari model.
-        $trashed = $trashed ?? "active";
-
-        $offset = ($page - 1) * $perPage;
-
-        /*
-    |--------------------------------------------------------------------------
-    | Filter soft delete
-    |--------------------------------------------------------------------------
-    */
-
-        if ($this->softDelete) {
-
-            if ($trashed === 'active') {
-                $this->where[] = "{$this->table}.deleted_at IS NULL";
-            } elseif ($trashed === 'onlyTrashed') {
-                $this->where[] = "{$this->table}.deleted_at IS NOT NULL";
-            }
-
-            // withTrashed tidak menambahkan filter
-        }
-
-        /*
-    |--------------------------------------------------------------------------
-    | Query dasar
-    |--------------------------------------------------------------------------
-    */
-
-        $fromQuery = "FROM {$this->table}";
-
-        $fromQuery .= $this->getJoins();
-
-        $whereQuery = '';
-
-        if (!empty($this->where)) {
-            $whereQuery = " WHERE " . implode(' AND ', $this->where);
-        }
-
-        /*
-    |--------------------------------------------------------------------------
-    | Query total data
-    |--------------------------------------------------------------------------
-    */
-
-        $countQuery = "SELECT COUNT(*) AS total
-                   {$fromQuery}
-                   {$whereQuery}";
-
-        $this->db->query($countQuery);
-
-        foreach ($this->bindings as $key => $value) {
-            $this->db->bind($key, $value);
-        }
-
-        $countResult = $this->db->single();
-
-        $total = (int) ($countResult['total'] ?? 0);
-
-        /*
-    |--------------------------------------------------------------------------
-    | Query data pagination
-    |--------------------------------------------------------------------------
-    */
-
-        $dataQuery = "SELECT {$this->select}
-                  {$fromQuery}
-                  {$whereQuery}
-                  ORDER BY {$this->table}.created_at DESC
-                  LIMIT {$perPage} OFFSET {$offset}";
-
-        $this->db->query($dataQuery);
-
-        foreach ($this->bindings as $key => $value) {
-            $this->db->bind($key, $value);
-        }
-
-        $data = $this->db->resultSet();
-
-        /*
-    |--------------------------------------------------------------------------
-    | Informasi pagination
-    |--------------------------------------------------------------------------
-    */
-
-        $totalPages = $total > 0
-            ? (int) ceil($total / $perPage)
-            : 0;
-
-        $result = [
-            'data' => $data,
-            'total' => $total,
-            'perPage' => $perPage,
-            'currentPage' => $page,
-            'totalPages' => $totalPages,
-            'from' => $total > 0 ? $offset + 1 : 0,
-            'to' => min($offset + $perPage, $total),
-            'hasNextPage' => $page < $totalPages,
-            'hasPreviousPage' => $page > 1,
-        ];
-
-        $this->resetQuery();
-
-        return $result;
+        // Selalu kembali ke default setelah query selesai
+        $this->trashedMode = 'active';
     }
 }

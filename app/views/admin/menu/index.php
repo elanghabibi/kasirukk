@@ -1,6 +1,6 @@
 <div class="w-full flex justify-between items-center h-fit gap-4">
     <div class="w-8/10">
-        <form action="<?= Helpers::url('/admin/menu') ?>" method="GET" class="relative w-full">
+        <form action="<?= Helpers::url('/admin/menu') ?>" method="GET" class="relative w-full" autocomplete="off" spellcheck="false">
             <button
                 type="submit"
                 class="flex items-center justify-center cursor-pointer absolute top-1/2 -translate-y-1/2 left-5 text-xl text-gray-600">
@@ -84,11 +84,11 @@
                                     <?php endif; ?>
                                 </td>
                                 <td class="w-40 py-3 px-6">
-                                    <?php if ($status === "aktif"): ?>
+                                    <?php if (!isset($menu['deleted_at'])): ?>
                                         <div class="flex gap-2">
-                                            <div class="modal">
+                                            <div>
                                                 <a href="<?= Helpers::url('/admin/menu/edit/' . $menu['id']) ?>"
-                                                    class="modal-btn cursor-pointer w-fit aspect-square p-2 bg-blue-100 text-blue-600 rounded flex items-center gap-1">
+                                                    class="cursor-pointer w-fit aspect-square p-2 bg-blue-100 text-blue-600 rounded flex items-center gap-1">
                                                     <i class="bx bx-edit"></i>
                                                 </a>
                                             </div>
@@ -289,7 +289,7 @@
     <!-- Tambah Menu -->
     <div class="flex-1 w-full border border-gray-200 rounded-lg p-4 flex flex-col gap-4 shadow-sm">
         <h2 class="text-lg font-semibold">Tambah Menu</h2>
-        <form action="<?= Helpers::url('/admin/menu/tambah') ?>" method="POST" enctype="multipart/form-data" class="form space-y-4 text-sm">
+        <form action="<?= Helpers::url('/admin/menu/tambah') ?>" method="POST" enctype="multipart/form-data" class="form space-y-4 text-sm" autocomplete="off" spellcheck="false">
             <div class="w-full flex flex-col gap-2">
                 <label>
                     Foto Menu

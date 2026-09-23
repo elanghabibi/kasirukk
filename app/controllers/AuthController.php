@@ -28,7 +28,11 @@ class AuthController extends Controller
             return $this->redirect("/login");
         }
 
-        $user = $this->model("User")->where("email", $_POST['email']);
+        $user = $this->model("User")->firstWhere("email", $_POST['email']);
+
+        // var_dump($user);
+        // exit;
+        // FIX INI DAN JUGA FIX EMAIL YANG DUPLIKAT
 
         // User tidak ditemukan
         if (!$user) {
@@ -42,7 +46,7 @@ class AuthController extends Controller
         }
 
         // Password salah
-        if (!password_verify($_POST['password'], $user[0]['password'])) {
+        if (!password_verify($_POST['password'], $user['password'])) {
             Flasher::setFlash(
                 "Email atau password salah",
                 "error",
@@ -56,19 +60,19 @@ class AuthController extends Controller
 
         // Login berhasil
         $_SESSION['user'] = [
-            'id' => $user[0]['id'],
-            'nama' => $user[0]['nama'],
-            'email' => $user[0]['email'],
-            'role' => $user[0]['role'],
+            'id' => $user['id'],
+            'nama' => $user['nama'],
+            'email' => $user['email'],
+            'role' => $user['role'],
         ];
 
         Flasher::setFlash(
-            "Selamat datang, " . $user[0]['nama'],
+            "Selamat datang, " . $user['nama'],
             "success",
             "Berhasil Masuk!"
         );
 
-        return $this->redirect("/" . $user[0]['role']);
+        return $this->redirect("/" . $user['role']);
     }
 
     public function register()

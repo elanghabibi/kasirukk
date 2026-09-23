@@ -34,9 +34,23 @@ class Route {
             $router->post("/admin/menu/edit/{id}", ["AdminMenuController", "update"], ['auth', "role:admin"]);
             
             $router->post("/admin/menu/destroy/{id}", ["AdminMenuController", "destroy"], ['auth', "role:admin"]);
-
+            
             $router->post("/admin/menu/nonaktifkan/{id}", ["AdminMenuController", "nonaktifkan"], ['auth', "role:admin"]);
             $router->post("/admin/menu/aktifkan/{id}", ["AdminMenuController", "aktifkan"], ['auth', "role:admin"]);
+            
+            // Kelola Kategori
+            $router->get("/admin/kategori", ["AdminKategoriController", "index"], ['auth', "role:admin"]);
+            
+            $router->post("/admin/kategori/tambah", ["AdminKategoriController", "store"], ['auth', "role:admin"]);
+            
+            $router->get("/admin/kategori/edit/{id}", ["AdminKategoriController", "edit"], ['auth', "role:admin"]);
+            $router->post("/admin/kategori/edit/{id}", ["AdminKategoriController", "update"], ['auth', "role:admin"]);
+            
+            $router->post("/admin/kategori/destroy/{id}", ["AdminKategoriController", "destroy"], ['auth', "role:admin"]);
+
+            $router->post("/admin/kategori/nonaktifkan/{id}", ["AdminKategoriController", "nonaktifkan"], ['auth', "role:admin"]);
+            $router->post("/admin/kategori/aktifkan/{id}", ["AdminKategoriController", "aktifkan"], ['auth', "role:admin"]);
+
 
         // Auth
         $router->get("/login", ['AuthController', 'formLogin'], ['guest']);

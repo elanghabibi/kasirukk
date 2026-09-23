@@ -8,6 +8,8 @@ class AdminUserController extends Controller
         $keyword = trim($_GET['search'] ?? '');
         $page = max(1, (int) ($_GET['page'] ?? 1));
 
+        $banyakPage = 10;
+
         $data['title'] = 'Kelola User';
 
         $userModel = $this->model('User');
@@ -26,11 +28,17 @@ class AdminUserController extends Controller
         }
 
         // Ambil data dengan pagination
-        $pagination = $userModel->paginate(
-            10,
-            $page,
-            $trashedMode
-        );
+        if ($trashedMode == "onlyTrashed") {
+            $pagination = $userModel->onlyTrashed()->paginate(
+                $banyakPage,
+                $page
+            );
+        } else if ($trashedMode == "active") {
+            $pagination = $userModel->paginate(
+                $banyakPage,
+                $page
+            );
+        }
 
         $data['dataUser'] = $pagination['data'];
         $data['pagination'] = $pagination;
@@ -61,13 +69,21 @@ class AdminUserController extends Controller
         }
 
         $userModel = $this->model("User");
+
+        $emailExists = $userModel->exists("email", $_POST['email']);
+        if ($emailExists) {
+            Flasher::setFlash("Email sudah digunakan", "error", "Gagal");
+            $_SESSION['old'] = $_POST;
+            return $this->redirect("/admin/user");
+        }
+
         $_POST['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
         if ($userModel->store($_POST) > 0) {
-            Flasher::setFlash("Catatan berhasil dibuat!");
+            Flasher::setFlash("User berhasil dibuat!");
             return $this->redirect("/admin/user");
         } else {
-            Flasher::setFlash("Gagal membuat catatan", "error", "Gagal!");
+            Flasher::setFlash("Gagal membuat user baru", "error", "Gagal!");
             return $this->redirect("/admin/user");
         }
     }
@@ -127,6 +143,20 @@ class AdminUserController extends Controller
         }
 
         $userModel = $this->model("User");
+
+        $emailExists = $userModel
+            ->where("email", $_POST['email'])
+            ->where('id', "!=", $id)
+            ->get();
+            
+        if ($emailExists) {
+            $_SESSION['errors'] = [
+                'email' => 'Email sudah ada.'
+            ];
+
+            $_SESSION['old'] = $_POST;
+            return $this->redirect("/admin/user/edit/{$id}");
+        }
 
         if (!empty($_POST['password'])) {
             $_POST['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);

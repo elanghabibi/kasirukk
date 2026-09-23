@@ -8,6 +8,8 @@ class AdminMenuController extends Controller
         $keyword = trim($_GET['search'] ?? '');
         $page = max(1, (int) ($_GET['page'] ?? 1));
 
+        $banyakPage = 10;
+
         $data['title'] = 'Kelola Menu';
 
         $menuModel = $this->model('Menu');
@@ -25,12 +27,17 @@ class AdminMenuController extends Controller
             $menuModel->search($keyword, ['nama']);
         }
 
-        // Ambil data dengan pagination
-        $pagination = $menuModel->paginate(
-            10,
-            $page,
-            $trashedMode
-        );
+        if ($trashedMode == "onlyTrashed") {
+            $pagination = $menuModel->onlyTrashed()->paginate(
+                $banyakPage,
+                $page
+            );
+        } else if ($trashedMode == "active") {
+            $pagination = $menuModel->paginate(
+                $banyakPage,
+                $page
+            );
+        }
 
         // Ambil data kategori
         $dataKategori = $this->model('Kategori')->all();
@@ -66,6 +73,9 @@ class AdminMenuController extends Controller
         }
 
         $imagePath = Upload::image('foto', 'uploads/foto_menu');
+
+        // var_dump($imagePath);
+        // exit;
 
         if ($imagePath) {
             $_POST['foto'] = $imagePath;
@@ -171,7 +181,7 @@ class AdminMenuController extends Controller
             if ($imagePath) {
 
                 // Hapus foto lama
-                if (!empty($menuLama['foto'])) {
+                if (!empty($menuLama['foto']) && $menuLama['foto'] !== 'uploads/foto_menu/default.png') {
                     $oldFile = dirname(__DIR__, 2) . '/public/' . $menuLama['foto'];
 
                     if (file_exists($oldFile)) {
@@ -206,7 +216,17 @@ class AdminMenuController extends Controller
     {
         $menuModel = $this->model("Menu");
 
+        $menu = $menuModel->find($id);
+
         if ($menuModel->destroy($id) > 0) {
+            if (!empty($menu['foto']) && $menu['foto'] !== 'uploads/foto_menu/default.png') {
+                $oldFile = dirname(__DIR__, 2) . '/public/' . $menu['foto'];
+
+                if (file_exists($oldFile)) {
+                    unlink($oldFile);
+                }
+            }
+
             Flasher::setFlash("Menu berhasil dihapus!");
             return $this->redirect("/admin/menu");
         } else {

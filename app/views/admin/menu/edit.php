@@ -1,7 +1,6 @@
 <!-- Edit Menu -->
 <div class="w-full gap-4 flex flex-col">
-    <h2 class="text-lg font-semibold">Edit Menu</h2>
-    <form action="<?= Helpers::url('/admin/menu/edit/' . $menu['id']) ?>" method="POST" enctype="multipart/form-data" class="form space-y-4 text-sm">
+    <form action="<?= Helpers::url('/admin/menu/edit/' . $menu['id']) ?>" method="POST" enctype="multipart/form-data" class="form space-y-4" autocomplete="off" spellcheck="false">
         <div class="w-full flex flex-col gap-2">
             <label>
                 Foto Menu
@@ -98,7 +97,10 @@
                 <?php endif; ?>
             </div>
         </div>
-        <button type="submit" class="form-btn w-full py-2 cursor-pointer bg-lime-600 text-gray-50 rounded-lg font-semibold"><span class="form-btntext">Tambah</span></button>
+        <div class="w-full flex gap-4">
+            <button type="submit" class="form-btn w-fit bg-lime-600 text-gray-50 px-6 py-2 rounded-lg cursor-pointer"><span class="form-btntext">Edit</span></button>
+            <a href="<?= Helpers::url("/admin/menu") ?>" class="w-fit bg-gray-100 text-gray-600 px-6 py-2 rounded-lg cursor-pointer">Batal</a>
+        </div>
     </form>
 </div>
 <!-- End Edit User -->
