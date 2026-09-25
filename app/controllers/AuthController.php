@@ -32,8 +32,7 @@ class AuthController extends Controller
 
         // var_dump($user);
         // exit;
-        // FIX INI DAN JUGA FIX EMAIL YANG DUPLIKAT
-
+       
         // User tidak ditemukan
         if (!$user) {
             Flasher::setFlash(

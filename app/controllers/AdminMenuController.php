@@ -10,8 +10,6 @@ class AdminMenuController extends Controller
 
         $banyakPage = 10;
 
-        $data['title'] = 'Kelola Menu';
-
         $menuModel = $this->model('Menu');
 
         // Tentukan mode soft delete berdasarkan status
@@ -43,6 +41,7 @@ class AdminMenuController extends Controller
         $dataKategori = $this->model('Kategori')->all();
 
         // Kirim data ke view
+        $data['title'] = 'Kelola Menu';
         $data['dataMenu'] = $pagination['data'];
         $data['pagination'] = $pagination;
         $data['dataKategori'] = $dataKategori;
@@ -261,5 +260,3 @@ class AdminMenuController extends Controller
         }
     }
 }
-
-// Buat Fitur Tambah Menu Edit Menu dll

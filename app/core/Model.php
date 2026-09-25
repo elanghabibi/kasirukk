@@ -297,8 +297,8 @@ abstract class Model
                 implode(' AND ', $this->where);
         }
 
-        // $query .=
-        //     " ORDER BY {$this->table}.created_at DESC";
+        $query .=
+            " ORDER BY {$this->table}.created_at DESC";
 
         $this->db->query($query);
 
@@ -752,6 +752,43 @@ abstract class Model
 
         $softDelete =
             $this->getSoftDeleteCondition();
+
+        if ($softDelete) {
+            $query .= " AND {$softDelete}";
+        }
+
+        $this->db->query($query);
+
+        $result = $this->db->single();
+
+        return (float) ($result['total'] ?? 0);
+    }
+
+    public function sum(
+        $column,
+        $dateColumn = null,
+        $startDate = null,
+        $endDate = null
+    ) {
+        $query = "
+        SELECT SUM({$this->table}.{$column}) AS total
+        FROM {$this->table}
+        WHERE {$this->table}.{$column} IS NOT NULL
+    ";
+
+        // Filter tanggal
+        if ($dateColumn && $startDate) {
+            $query .= " AND {$this->table}.{$dateColumn} >= :startDate";
+            $this->db->bind(':startDate', $startDate);
+        }
+
+        if ($dateColumn && $endDate) {
+            $query .= " AND {$this->table}.{$dateColumn} <= :endDate";
+            $this->db->bind(':endDate', $endDate);
+        }
+
+        // Soft delete
+        $softDelete = $this->getSoftDeleteCondition();
 
         if ($softDelete) {
             $query .= " AND {$softDelete}";
