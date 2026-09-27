@@ -57,9 +57,13 @@ class Transaksi extends Model
                     'kode_transaksi' => $row['kode_transaksi'],
                     'kasir' => $row['kasir'],
                     'nama_pelanggan' => $row['nama_pelanggan'],
+                    'subtotal' => $row['subtotal'],
+                    'pajak' => $row['pajak'],
                     'total' => $row['total'],
                     'tipe_order' => $row['tipe_order'],
                     'tanggal' => $row['tanggal_transaksi'],
+                    'tunai' => $row['tunai'],
+                    'kembalian' => $row['kembalian'],
                     'created_at' => $row['created_at'],
                     'details' => []
                 ];
@@ -105,9 +109,15 @@ class Transaksi extends Model
             'kode_transaksi' => $data[0]['kode_transaksi'],
             'kasir' => $data[0]['kasir'],
             'nama_pelanggan' => $data[0]['nama_pelanggan'],
+            'subtotal' => $data[0]['subtotal'],
+            'pajak' => $data[0]['pajak'],
             'total' => $data[0]['total'],
             'tipe_order' => $data[0]['tipe_order'],
+            'no_meja' => $data[0]['no_meja'],
+            'keterangan' => $data[0]['keterangan'],
             'tanggal' => $data[0]['tanggal_transaksi'],
+            'tunai' => $data[0]['tunai'],
+            'kembalian' => $data[0]['kembalian'],
             'created_at' => $data[0]['created_at'],
             'details' => []
         ];
@@ -130,5 +140,105 @@ class Transaksi extends Model
         );
 
         return $transaksi;
+    }
+
+    public function paginateWithDetails($perPage = 10, $page = 1)
+    {
+        // Ambil transaksi utama terlebih dahulu
+        $pagination = $this->select('
+            transaksi.*,
+            users.nama AS kasir')->join(
+                'users',
+                'users.id = transaksi.user_id'
+            )->paginate($perPage, $page);
+
+        if (empty($pagination['data'])) {
+            $pagination['data'] = [];
+            return $pagination;
+        }
+
+        $result = [];
+
+        foreach ($pagination['data'] as $row) {
+            $id = $row['id'];
+
+            $result[$id] = [
+                'id' => $row['id'],
+                'kode_transaksi' => $row['kode_transaksi'],
+                'kasir' => $row['kasir'],
+                'nama_pelanggan' => $row['nama_pelanggan'],
+                'subtotal' => $row['subtotal'],
+                'pajak' => $row['pajak'],
+                'total' => $row['total'],
+                'tipe_order' => $row['tipe_order'],
+                'tanggal' => $row['tanggal_transaksi'],
+                'tunai' => $row['tunai'],
+                'kembalian' => $row['kembalian'],
+                'created_at' => $row['created_at'],
+                'details' => []
+            ];
+        }
+
+        // Ambil detail berdasarkan transaksi yang sudah dipaginasi
+        foreach ($result as &$transaksi) {
+
+            $details = $this
+                ->withDetailTransaksi()
+                ->where('id', $transaksi['id'])
+                ->get();
+
+            foreach ($details as $detail) {
+                $transaksi['details'][] = [
+                    'id' => $detail['detail_id'],
+                    'menu_id' => $detail['menu_id'],
+                    'nama_menu' => $detail['nama_menu'],
+                    'harga_menu' => $detail['harga_menu'],
+                    'qty' => $detail['qty'],
+                    'subtotal' => $detail['subtotal']
+                ];
+            }
+
+            $transaksi['banyak_item'] =
+                count($transaksi['details']);
+
+            $transaksi['total_qty'] =
+                array_sum(
+                    array_column(
+                        $transaksi['details'],
+                        'qty'
+                    )
+                );
+        }
+
+        unset($transaksi);
+
+        $pagination['data'] = array_values($result);
+
+        return $pagination;
+    }
+
+    public function getUrutanHariIni()
+    {
+        $tanggal = date('Ymd');
+
+        $this->db->query("
+        SELECT MAX(
+            CAST(
+                SUBSTRING_INDEX(kode_transaksi, '-', -1)
+                AS UNSIGNED
+            )
+        ) AS urutan
+        FROM transaksi
+        WHERE kode_transaksi LIKE :kode
+    ");
+
+        $this->db->bind(
+            ':kode',
+            "TX-{$tanggal}-%"
+        );
+
+        $result = $this->db->single();
+
+        return ((int) ($result['urutan'] ?? 0)) + 1;
     }
 }

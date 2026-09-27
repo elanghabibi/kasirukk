@@ -264,7 +264,7 @@
         <form action="<?= Helpers::url('/admin/kategori/tambah') ?>" method="POST" class="form space-y-4 text-sm" autocomplete="off" spellcheck="false">
             <div class="flex flex-col gap-2">
                 <label for="nama">Nama</label>
-                <input type="text" id="nama" name="nama" placeholder="Joseph" value="<?= $_SESSION['old']['nama'] ?? '' ?>" class="w-full border border-gray-200 rounded-md py-2 pl-2 placeholder:text-gray-300">
+                <input type="text" id="nama" name="nama" placeholder="Makanan" value="<?= $_SESSION['old']['nama'] ?? '' ?>" class="w-full border border-gray-200 rounded-md py-2 pl-2 placeholder:text-gray-300">
                 <?php if (isset($_SESSION['errors']['nama'])): ?>
                     <p class="text-xs text-red-500"><?= $_SESSION['errors']['nama'] ?></p>
                 <?php endif; ?>

@@ -8,7 +8,7 @@ class AdminMenuController extends Controller
         $keyword = trim($_GET['search'] ?? '');
         $page = max(1, (int) ($_GET['page'] ?? 1));
 
-        $banyakPage = 10;
+        $banyakDataPerPage = 10;
 
         $menuModel = $this->model('Menu');
 
@@ -27,12 +27,12 @@ class AdminMenuController extends Controller
 
         if ($trashedMode == "onlyTrashed") {
             $pagination = $menuModel->onlyTrashed()->paginate(
-                $banyakPage,
+                $banyakDataPerPage,
                 $page
             );
         } else if ($trashedMode == "active") {
             $pagination = $menuModel->paginate(
-                $banyakPage,
+                $banyakDataPerPage,
                 $page
             );
         }

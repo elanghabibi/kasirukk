@@ -4,12 +4,40 @@ class AdminTransaksiController extends Controller
 {
     public function index()
     {
-        $dataTransaksi = $this->model('Transaksi')->getWithDetails();
+        $keyword = trim($_GET['search'] ?? '');
+        $page = max(1, (int) ($_GET['page'] ?? 1));
 
-        $data['title'] = 'Kelola Transaksi';
-        $data['dataTransaksi'] = $dataTransaksi;
-        $data['totalTransaksi'] = $this->model("Transaksi")->count();
-        $data['totalPendapatan'] = $this->model("Transaksi")->sum('total');
+        $banyakDataPerPage = 10;
+
+        $transaksiModel = $this->model('Transaksi');
+
+        if ($keyword !== '') {
+            $transaksiModel->search(
+                $keyword,
+                ['kode_transaksi', 'nama_pelanggan']
+            );
+        }
+
+        $pagination = $transaksiModel->paginateWithDetails(
+            $banyakDataPerPage,
+            $page
+        );
+
+        $data['title'] = 'Riwayat Transaksi';
+
+        $data['dataTransaksi'] = $pagination['data'];
+
+        $data['pagination'] = $pagination;
+
+        $data['totalTransaksi'] = $this
+            ->model('Transaksi')
+            ->count();
+
+        $data['totalPendapatan'] = $this
+            ->model('Transaksi')
+            ->sum('total');
+
+        $data['keyword'] = $keyword;
 
         $this->view(
             'admin/transaksi/index',

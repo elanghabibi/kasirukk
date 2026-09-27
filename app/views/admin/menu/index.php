@@ -340,7 +340,7 @@
             </div>
             <div class="flex flex-col gap-2">
                 <label for="nama">Nama Menu</label>
-                <input type="text" id="nama" name="nama" placeholder="Joseph" value="<?= $_SESSION['old']['nama'] ?? '' ?>" class="w-full border border-gray-200 rounded-md py-2 pl-2 placeholder:text-gray-300">
+                <input type="text" id="nama" name="nama" placeholder="Mie Ayam" value="<?= $_SESSION['old']['nama'] ?? '' ?>" class="w-full border border-gray-200 rounded-md py-2 pl-2 placeholder:text-gray-300">
                 <?php if (isset($_SESSION['errors']['nama'])): ?>
                     <p class="text-xs text-red-500"><?= $_SESSION['errors']['nama'] ?></p>
                 <?php endif; ?>

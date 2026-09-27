@@ -477,4 +477,18 @@ class Helpers
 
         return $months[(int) date('n')];
     }
+
+    public static function formatLabel($text)
+    {
+        return ucwords(str_replace('_', ' ', $text));
+    }
+
+    public static function formatKodeTransaksi($number)
+    {
+        $prefix = 'TX';
+        $tanggal = date('Ymd');
+        $urutan = str_pad($number, 3, '0', STR_PAD_LEFT);
+
+        return "{$prefix}-{$tanggal}-{$urutan}";
+    }
 }
