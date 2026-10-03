@@ -50,7 +50,7 @@
                         <td class="w-50 py-3 px-6">Harga</td>
                         <td class="w-35 py-3 px-6">Kategori</td>
                         <td class="w-30 py-3 px-6">Ketersediaan</td>
-                        <td class="w-40 py-3 px-6">Aksi</td>
+                        <td class="w-50 py-3 px-6">Aksi</td>
                     </tr>
                 </thead>
                 <tbody>
@@ -83,9 +83,16 @@
                                         <span class="w-fit h-fit px-3 py-1 text-xs rounded-sm bg-red-100 text-red-600">Habis</span>
                                     <?php endif; ?>
                                 </td>
-                                <td class="w-40 py-3 px-6">
+                                <td class="w-50 py-3 px-6">
                                     <?php if (!isset($menu['deleted_at'])): ?>
                                         <div class="flex gap-2">
+                                            <div>
+                                                <button type="button"
+                                                    class="btn-open-modal cursor-pointer w-fit aspect-square p-2 bg-orange-100 text-orange-600 rounded flex items-center gap-1" data-menu='<?= htmlspecialchars(json_encode($menu), ENT_QUOTES, 'UTF-8') ?>'>
+                                                    <i class="bx bx-info-circle"></i>
+                                                </button>
+                                            </div>
+
                                             <div>
                                                 <a href="<?= Helpers::url('/admin/menu/edit/' . $menu['id']) ?>"
                                                     class="cursor-pointer w-fit aspect-square p-2 bg-blue-100 text-blue-600 rounded flex items-center gap-1">
@@ -131,45 +138,46 @@
                                                     </div>
                                                 </div>
                                                 <!-- End Button Nonaktif -->
+                                                <?php if (Helpers::canDeleteWithin24Hours($menu['created_at'])): ?>
+                                                    <!-- Button Hapus -->
+                                                    <div class="modal">
+                                                        <button
+                                                            class="modal-btn cursor-pointer w-fit aspect-square p-2 bg-red-100 text-red-600 rounded flex items-center gap-1">
+                                                            <i class="bx bx-trash"></i>
+                                                        </button>
 
-                                                <!-- Button Hapus -->
-                                                <div class="modal">
-                                                    <button
-                                                        class="modal-btn cursor-pointer w-fit aspect-square p-2 bg-red-100 text-red-600 rounded flex items-center gap-1">
-                                                        <i class="bx bx-trash"></i>
-                                                    </button>
-
-                                                    <div
-                                                        class="modal-panel opacity-0 pointer-events-none absolute top-0 left-0 w-full h-screen flex justify-center items-center bg-gray-950/10"
-                                                        style="z-index: 200">
                                                         <div
-                                                            class="bg-gray-50 p-6 text-center rounded-xl shadow-lg shadow-gray-600/5 w-80 max-md:w-7/10 flex flex-col gap-6">
-                                                            <i
-                                                                class="bx bx-alert-triangle text-red-500 text-5xl"></i>
-                                                            <h2 class="text-2xl font-bold leading-6">
-                                                                Hapus Data
-                                                            </h2>
-                                                            <p class="text-sm text-gray-600">
-                                                                Apakah anda yakin ingin menghapus?
-                                                            </p>
+                                                            class="modal-panel opacity-0 pointer-events-none absolute top-0 left-0 w-full h-screen flex justify-center items-center bg-gray-950/10"
+                                                            style="z-index: 200">
+                                                            <div
+                                                                class="bg-gray-50 p-6 text-center rounded-xl shadow-lg shadow-gray-600/5 w-80 max-md:w-7/10 flex flex-col gap-6">
+                                                                <i
+                                                                    class="bx bx-alert-triangle text-red-500 text-5xl"></i>
+                                                                <h2 class="text-2xl font-bold leading-6">
+                                                                    Hapus Data
+                                                                </h2>
+                                                                <p class="text-sm text-gray-600">
+                                                                    Apakah anda yakin ingin menghapus?
+                                                                </p>
 
-                                                            <div class="w-full grid grid-cols-2 gap-4">
-                                                                <button
-                                                                    class="modal-close w-full bg-gray-200 text-gray-950 font-bold py-2 text-sm rounded-lg cursor-pointer">
-                                                                    Batal
-                                                                </button>
-                                                                <form action="<?= Helpers::url('/admin/menu/destroy/' . $menu['id']) ?>" method="POST" class="form">
+                                                                <div class="w-full grid grid-cols-2 gap-4">
                                                                     <button
-                                                                        type="submit"
-                                                                        class="form-btn w-full bg-red-500 text-gray-50 font-bold py-2 text-sm rounded-lg cursor-pointer">
-                                                                        <span class="form-btntext">Ya, Hapus</span>
+                                                                        class="modal-close w-full bg-gray-200 text-gray-950 font-bold py-2 text-sm rounded-lg cursor-pointer">
+                                                                        Batal
                                                                     </button>
-                                                                </form>
+                                                                    <form action="<?= Helpers::url('/admin/menu/destroy/' . $menu['id']) ?>" method="POST" class="form">
+                                                                        <button
+                                                                            type="submit"
+                                                                            class="form-btn w-full bg-red-500 text-gray-50 font-bold py-2 text-sm rounded-lg cursor-pointer">
+                                                                            <span class="form-btntext">Ya, Hapus</span>
+                                                                        </button>
+                                                                    </form>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <!-- End Button Hapus -->
+                                                    <!-- End Button Hapus -->
+                                                <?php endif; ?>
                                             <?php endif; ?>
                                         </div>
                                     <?php else : ?>
@@ -392,6 +400,47 @@
     <!-- End Tambah menu -->
 </div>
 
+
+<!-- GLOBAL MODAL DETAIL MENU -->
+<div id="modalDetail" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+    <!-- Box Modal Card -->
+    <div class="space-y-4 bg-white rounded-lg shadow-2xl w-full max-w-md overflow-hidden transform transition-all duration-300 p-6 text-gray-800">
+
+        <!-- Header Modal: Judul & Close Button -->
+        <div class="flex justify-between items-center">
+            <h3 class="text-xl font-bold text-gray-900">Detail Menu</h3>
+            <button id="closeModal" class="cursor-pointer text-gray-400 hover:text-gray-600 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <div class="grid grid-cols-2 w-full gap-4">
+            <div class="w-full aspect-square overflow-hidden shrink-0 rounded-lg">
+                <img id="modalFoto" class="w-full h-full object-cover" src="<?= Helpers::url('/uploads/foto_menu/default.png') ?>" alt="">
+            </div>
+
+            <div class="w-full flex flex-col justify-between">
+                <div>
+                    <p id="modalKategori" class="text-xs">MAKANAN</p>
+                    <h2 id="modalNamaMenu" class="text-2xl font-bold">Pizza</h2>
+                    <div id="modalKetersediaan" class="mt-2 text-xs rounded-full px-3 py-0.5 w-fit border">Tersedia</div>
+                </div>
+                <div>
+                    <p id="modalHarga" class="text-lime-600 font-bold text-2xl">Rp89.999</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-2">
+            <h3 class="text-xs text-gray-800">Deskripsi</h3>
+            <p id="modalDeskripsi" class="text-xs text-gray-600">Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium repellat quam obcaecati optio dolore eum esse, itaque quidem aliquam unde.</p>
+        </div>
+
+    </div>
+</div>
+
 <script>
     const input = document.getElementById('menu-image');
     const preview = document.getElementById('image-preview');
@@ -421,4 +470,70 @@
         preview.classList.remove('hidden');
         uploadContent.classList.add('hidden');
     });
+
+    // Modal Detail
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('modalDetail');
+        const closeModalBtn = document.getElementById('closeModal');
+
+        // Helper Format Rupiah (Tanpa Angka Desimal)
+        function formatRupiah(angka) {
+            return 'Rp' + new Intl.NumberFormat('id-ID').format(angka || 0);
+        }
+
+        // Helper Format Tanggal
+        function formatTanggal(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Event Delegation / Event Listener tombol detail
+        document.querySelectorAll('.btn-open-modal').forEach(button => {
+            button.addEventListener('click', function() {
+                const data = JSON.parse(this.getAttribute('data-menu'));
+
+                console.log(data);
+                document.getElementById('modalFoto').src = "../" + (data.foto || '');
+                document.getElementById('modalKategori').textContent = (data.nama_kategori || '');
+                document.getElementById('modalNamaMenu').textContent = data.nama || '';
+
+                document.getElementById('modalKetersediaan').textContent = data.ketersediaan == "tersedia" ? "Tersedia" : "Habis";
+                if (data.ketersediaan == 'tersedia') {
+                    document.getElementById('modalKetersediaan').classList.remove("border-red-600", "text-red-600", "bg-red-50");
+                    document.getElementById('modalKetersediaan').classList.add("border-green-600", "text-green-600", "bg-green-50");
+                } else {
+                    document.getElementById('modalKetersediaan').classList.remove("border-green-600", "text-green-600", "bg-green-50");
+                    document.getElementById('modalKetersediaan').classList.add("border-red-600", "text-red-600", "bg-red-50");
+                }
+                
+                document.getElementById('modalHarga').textContent = formatRupiah(data.harga) || "-";
+                document.getElementById('modalDeskripsi').textContent = data.deskripsi || "-";
+                
+                // Tampilkan Modal
+                modal.classList.remove('hidden');
+            });
+        });
+
+        // Tutup Modal via Tombol X
+        closeModalBtn.addEventListener('click', function() {
+            modal.classList.add('hidden');
+        });
+
+        // Tutup Modal via Klik Backdrop
+        window.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.classList.add('hidden');
+            }
+        });
+    });
+
+    // End Modal Detail
 </script>

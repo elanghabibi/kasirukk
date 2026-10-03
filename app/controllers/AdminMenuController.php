@@ -83,10 +83,10 @@ class AdminMenuController extends Controller
         $menuModel = $this->model("menu");
 
         if ($menuModel->store($_POST) > 0) {
-            Flasher::setFlash("Catatan berhasil dibuat!");
+            Flasher::setFlash("Menu berhasil dibuat!");
             return $this->redirect("/admin/menu");
         } else {
-            Flasher::setFlash("Gagal membuat catatan", "error", "Gagal!");
+            Flasher::setFlash("Gagal membuat menu", "error", "Gagal!");
             return $this->redirect("/admin/menu");
         }
     }
@@ -213,9 +213,32 @@ class AdminMenuController extends Controller
 
     public function destroy($id)
     {
+
         $menuModel = $this->model("Menu");
 
+        if ($menuModel->hasTransaksi($id)) {
+            $menu = $menuModel->where('id', $id)->get();
+            Flasher::setFlash(
+                $menu[0]['nama'] . " tidak dapat dihapus karena sudah memiliki menu yang terikat",
+                "error",
+                "Gagal Menghapus!"
+            );
+
+            return $this->redirect("/admin/menu");
+        }
+
         $menu = $menuModel->find($id);
+
+        // Cek batas 24 jam
+        if (!Helpers::canDeleteWithin24Hours($menu['created_at'])) {
+            Flasher::setFlash(
+                "Menu sudah lebih dari 24 jam dan tidak dapat dihapus.",
+                "error",
+                "Gagal Menghapus!"
+            );
+
+            return $this->redirect("/admin/menu");
+        }
 
         if ($menuModel->destroy($id) > 0) {
             if (!empty($menu['foto']) && $menu['foto'] !== 'uploads/foto_menu/default.png') {

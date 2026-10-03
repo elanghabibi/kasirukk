@@ -122,43 +122,45 @@
                                                 <!-- End Button Nonaktif -->
 
                                                 <!-- Button Hapus -->
-                                                <div class="modal">
-                                                    <button
-                                                        class="modal-btn cursor-pointer w-fit aspect-square p-2 bg-red-100 text-red-600 rounded flex items-center gap-1">
-                                                        <i class="bx bx-trash"></i>
-                                                    </button>
+                                                <?php if (Helpers::canDeleteWithin24Hours($user['created_at'])): ?>
+                                                    <div class="modal">
+                                                        <button
+                                                            class="modal-btn cursor-pointer w-fit aspect-square p-2 bg-red-100 text-red-600 rounded flex items-center gap-1">
+                                                            <i class="bx bx-trash"></i>
+                                                        </button>
 
-                                                    <div
-                                                        class="modal-panel opacity-0 pointer-events-none absolute top-0 left-0 w-full h-screen flex justify-center items-center bg-gray-950/10"
-                                                        style="z-index: 200">
                                                         <div
-                                                            class="bg-gray-50 p-6 text-center rounded-xl shadow-lg shadow-gray-600/5 w-80 max-md:w-7/10 flex flex-col gap-6">
-                                                            <i
-                                                                class="bx bx-alert-triangle text-red-500 text-5xl"></i>
-                                                            <h2 class="text-2xl font-bold leading-6">
-                                                                Hapus Data
-                                                            </h2>
-                                                            <p class="text-sm text-gray-600">
-                                                                Apakah anda yakin ingin menghapus?
-                                                            </p>
+                                                            class="modal-panel opacity-0 pointer-events-none absolute top-0 left-0 w-full h-screen flex justify-center items-center bg-gray-950/10"
+                                                            style="z-index: 200">
+                                                            <div
+                                                                class="bg-gray-50 p-6 text-center rounded-xl shadow-lg shadow-gray-600/5 w-80 max-md:w-7/10 flex flex-col gap-6">
+                                                                <i
+                                                                    class="bx bx-alert-triangle text-red-500 text-5xl"></i>
+                                                                <h2 class="text-2xl font-bold leading-6">
+                                                                    Hapus Data
+                                                                </h2>
+                                                                <p class="text-sm text-gray-600">
+                                                                    Apakah anda yakin ingin menghapus?
+                                                                </p>
 
-                                                            <div class="w-full grid grid-cols-2 gap-4">
-                                                                <button
-                                                                    class="modal-close w-full bg-gray-200 text-gray-950 font-bold py-2 text-sm rounded-lg cursor-pointer">
-                                                                    Batal
-                                                                </button>
-                                                                <form action="<?= Helpers::url('/admin/user/destroy/' . $user['id']) ?>" method="POST" class="form">
+                                                                <div class="w-full grid grid-cols-2 gap-4">
                                                                     <button
-                                                                        type="submit"
-                                                                        class="form-btn w-full bg-red-500 text-gray-50 font-bold py-2 text-sm rounded-lg cursor-pointer">
-                                                                        <span class="form-btntext">Ya, Hapus</span>
+                                                                        class="modal-close w-full bg-gray-200 text-gray-950 font-bold py-2 text-sm rounded-lg cursor-pointer">
+                                                                        Batal
                                                                     </button>
-                                                                </form>
+                                                                    <form action="<?= Helpers::url('/admin/user/destroy/' . $user['id']) ?>" method="POST" class="form">
+                                                                        <button
+                                                                            type="submit"
+                                                                            class="form-btn w-full bg-red-500 text-gray-50 font-bold py-2 text-sm rounded-lg cursor-pointer">
+                                                                            <span class="form-btntext">Ya, Hapus</span>
+                                                                        </button>
+                                                                    </form>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <!-- End Button Hapus -->
+                                                    <!-- End Button Hapus -->
+                                                <?php endif; ?>
                                             <?php endif; ?>
                                         </div>
                                     <?php else: ?>

@@ -186,6 +186,18 @@ class AdminUserController extends Controller
         }
 
         $userModel = $this->model("User");
+        $user = $userModel->find($id);
+
+        // Cek batas 24 jam
+        if (!Helpers::canDeleteWithin24Hours($user['created_at'])) {
+            Flasher::setFlash(
+                "User sudah lebih dari 24 jam dan tidak dapat dihapus.",
+                "error",
+                "Gagal Menghapus!"
+            );
+
+            return $this->redirect("/admin/user");
+        }
 
         // Cek apakah user pernah melakukan transaksi
         if ($userModel->hasTransactions($id)) {

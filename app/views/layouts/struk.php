@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><?= $title ?? "Struk" ?> | RM. Maju Jaya</title>
+    <title><?= ucfirst($transaksi['nama_pelanggan']) . " Struk RM Maju Jaya" ?></title>
 
     <style>
         /* ==========================================

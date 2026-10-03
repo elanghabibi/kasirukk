@@ -198,6 +198,18 @@ class AdminKategoriController extends Controller
         }
 
         $kategoriModel = $this->model("Kategori");
+        $kategori = $kategoriModel->find($id);
+
+        // Cek batas 24 jam
+        if (!Helpers::canDeleteWithin24Hours($kategori['created_at'])) {
+            Flasher::setFlash(
+                "Kategori sudah lebih dari 24 jam dan tidak dapat dihapus.",
+                "error",
+                "Gagal Menghapus!"
+            );
+
+            return $this->redirect("/admin/kategori");
+        }
 
         // Cek apakah user pernah melakukan transaksi
         if ($kategoriModel->hasMenu($id)) {

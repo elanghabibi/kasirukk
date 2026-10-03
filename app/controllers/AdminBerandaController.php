@@ -7,7 +7,6 @@ class AdminBerandaController extends Controller {
         $data['totalTransaksi'] = $this->model("Transaksi")->countThisMonth('tanggal_transaksi');
         $data['totalPendapatan'] = $this->model("Transaksi")->sumThisMonth("total", "tanggal_transaksi");
         
-        
         $data["title"] = "Beranda";
         
         // $user = Auth::user();
@@ -27,7 +26,7 @@ class AdminBerandaController extends Controller {
     }
 }
 
-
+// LANJUT BIKIN PAGE KASIR
 
 
 ?>

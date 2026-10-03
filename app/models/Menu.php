@@ -24,4 +24,18 @@ class Menu extends Model
                 'kategori.id = menu.kategori_id'
             );
     }
+
+    public function hasTransaksi($id)
+    {
+        $this->db->query("
+        SELECT id
+        FROM detail_transaksi
+        WHERE menu_id = :kategori_id
+        LIMIT 1
+    ");
+
+        $this->db->bind(':kategori_id', $id);
+
+        return $this->db->single();
+    }
 }

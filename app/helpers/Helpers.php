@@ -491,4 +491,16 @@ class Helpers
 
         return "{$prefix}-{$tanggal}-{$urutan}";
     }
+
+    public static function canDeleteWithin24Hours($createdAt)
+    {
+        if (empty($createdAt)) {
+            return false;
+        }
+
+        $createdTime = strtotime($createdAt);
+        $now = time();
+
+        return ($now - $createdTime) < (24 * 60 * 60);
+    }
 }

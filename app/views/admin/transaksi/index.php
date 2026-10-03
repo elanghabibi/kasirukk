@@ -67,7 +67,7 @@
                                 <td class="w-28 py-3 px-6">
                                     <div class="flex gap-2">
                                         <div>
-                                            <butto type="button"
+                                            <button type="button"
                                                 class="btn-open-modal cursor-pointer w-fit aspect-square p-2 bg-orange-100 text-orange-600 rounded flex items-center gap-1" data-transaksi='<?= htmlspecialchars(json_encode($transaksi), ENT_QUOTES, 'UTF-8') ?>'>
                                             <i class="bx bx-info-circle"></i>
                                             </button>
@@ -158,12 +158,12 @@
 <!-- GLOBAL MODAL DETAIL TRANSAKSI -->
 <div id="modalDetail" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/40 p-4">
     <!-- Box Modal Card -->
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform transition-all duration-300 p-6 text-gray-800">
+    <div class="bg-white rounded-lg shadow-2xl w-full max-w-sm overflow-hidden transform transition-all duration-300 p-6 text-gray-800">
 
         <!-- Header Modal: Judul & Close Button -->
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-xl font-bold text-gray-900">Detail Transaksi</h3>
-            <button id="closeModal" class="text-gray-400 hover:text-gray-600 transition">
+            <button id="closeModal" class="cursor-pointer text-gray-400 hover:text-gray-600 transition">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
@@ -276,7 +276,7 @@
                 document.getElementById('modalKode').textContent = '#' + (data.kode_transaksi || '');
                 document.getElementById('modalTanggal').textContent = formatTanggal(data.created_at);
                 document.getElementById('modalCustomer').textContent = data.nama_pelanggan || '-';
-                document.getElementById('modalTipeOrder').textContent = data.tipe_order || 'Dine in';
+                document.getElementById('modalTipeOrder').textContent = data.tipe_order == 'dine_in' ? 'DIne In' : 'Take Away' ;
 
                 // Set Total Qty & List Item
                 document.getElementById('modalTotalQty').textContent = (data.total_qty || 0) + ' qty';
@@ -284,7 +284,7 @@
                 const itemsContainer = document.getElementById('modalItemsList');
                 itemsContainer.innerHTML = ''; // Reset item list
 
-                if (data.details && data.details.length > 0) {
+                if (data.details && data.details.length > 0 && data.details[0]['id'] !== null) {
                     data.details.forEach(item => {
                         const itemRow = document.createElement('div');
                         itemRow.className = 'flex justify-between items-start';
