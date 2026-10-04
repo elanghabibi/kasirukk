@@ -9,13 +9,7 @@ class AdminBerandaController extends Controller {
         
         $data["title"] = "Beranda";
         
-        // $user = Auth::user();
-        $user = $this->model("User")->find(2);
-        $transaksi = $this->model("Transaksi")->where(
-            'user_id',
-            $user['id']
-        );
-        $data['transaksi'] = $transaksi;
+        $user = Auth::user();
         
         if ($this->model("User")->exists("id", $user['id']) === false) {
             unset($_SESSION['user']);
@@ -25,8 +19,5 @@ class AdminBerandaController extends Controller {
         $this->view("admin/beranda/index", $data, "admin");
     }
 }
-
-// LANJUT BIKIN PAGE KASIR
-
 
 ?>

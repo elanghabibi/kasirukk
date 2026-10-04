@@ -16,7 +16,7 @@ class App
     private const DEFAULT_GET = "GET";
     private const DEFAULT_POST = "POST";
 
-    public function setDefaultConstroller($controller)
+    public function setDefaultController($controller)
     {
         $this->controller = $controller;
     }
@@ -81,10 +81,17 @@ class App
                 }
 
                 require_once __DIR__ . "/../controllers/" . $handler['handler'][0] . ".php";
-                $controller = new $handler['handler'][0];
+                $controller = explode("/", $handler['handler'][0]);
+                if (isset($controller[1])) {
+                    $nameController = new $controller[1];
+                } else {
+                    $nameController = new $controller[0];
+                }
+                // var_dump($controller);
+                // exit;
                 $method = $handler['handler'][1];
 
-                call_user_func_array([$controller, $method], $matches);
+                call_user_func_array([$nameController, $method], $matches);
                 return;
             }
         }

@@ -7,7 +7,7 @@ class AdminKategoriController extends Controller
         $status = $_GET['status'] ?? 'aktif';
         $keyword = trim($_GET['search'] ?? '');
         $page = max(1, (int) ($_GET['page'] ?? 1));
-        
+
         $banyakPage = 10;
 
         $data['title'] = 'Kelola Kategori';
@@ -68,6 +68,8 @@ class AdminKategoriController extends Controller
         $kategoriModel = $this->model("Kategori");
 
         $nama = trim($_POST['nama']);
+        $slug = str_replace(' ', '-', strtolower($nama));
+
         $kategori = $kategoriModel->withTrashed()->where('nama', $nama)->first();
         if ($kategori) {
             if ($kategori['deleted_at'] === null) {
@@ -80,11 +82,11 @@ class AdminKategoriController extends Controller
             return $this->redirect("/admin/kategori");
         }
 
-        if ($kategoriModel->store(['nama' => $nama]) > 0) {
+        if ($kategoriModel->store(['nama' => $nama, 'slug' => $slug]) > 0) {
             Flasher::setFlash("Kategori berhasil dibuat!");
             return $this->redirect("/admin/kategori");
         }
-        
+
         Flasher::setFlash("Gagal membuat kategori", "error", "Gagal!");
         return $this->redirect("/admin/kategori");
     }
@@ -145,6 +147,7 @@ class AdminKategoriController extends Controller
         $kategoriModel = $this->model("Kategori");
 
         $nama = trim($_POST['nama']);
+        $slug = str_replace(' ', '-', strtolower($nama));
 
         // Cek apakah nama kategori sudah digunakan kategori lain
         $kategori = $kategoriModel
@@ -165,7 +168,8 @@ class AdminKategoriController extends Controller
 
         // Pastikan hanya data yang diperlukan yang di-update
         $data = [
-            'nama' => $nama
+            'nama' => $nama,
+            'slug' => $slug
         ];
 
         if ($kategoriModel->update($data, $id) > 0) {

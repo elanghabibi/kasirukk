@@ -48,6 +48,7 @@
                     <tr class="border-b border-gray-200">
                         <td class="w-14 py-3 px-6">ID</td>
                         <td class="w-40 py-3 px-6">Nama</td>
+                        <td class="w-40 py-3 px-6">Slug</td>
                         <td class="w-40 py-3 px-6">Aksi</td>
                     </tr>
                 </thead>
@@ -57,6 +58,7 @@
                             <tr>
                                 <td class="w-14 py-3 px-6"><?= $kategori['id'] ?></td>
                                 <td class="w-40 py-3 px-6 truncate"><?= $kategori['nama'] ?></td>
+                                <td class="w-40 py-3 px-6 truncate"><?= $kategori['slug'] ?></td>
                                 <td class="w-40 py-3 px-6">
                                     <?php if (!isset($kategori['deleted_at'])): ?>
                                         <div class="flex gap-2">
