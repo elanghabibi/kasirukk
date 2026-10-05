@@ -71,6 +71,9 @@ class Route {
         $router->get("/kasir", ["Kasir/KasirBerandaController", "index"], ['auth', "role:kasir"]);
 
             $router->get("/kasir/transaksi", ["Kasir/KasirTransaksiController", "index"], ['auth', "role:kasir"]);
+            $router->post("/kasir/transaksi/cart/add", ["Kasir/KasirTransaksiController", "addToCart"], ['auth', "role:kasir"]);
+            $router->post("/kasir/transaksi/cart/update", ["Kasir/KasirTransaksiController", "updateCart"], ['auth', "role:kasir"]);
+            $router->post("/kasir/transaksi/cart/remove", ["Kasir/KasirTransaksiController", "removeFromCart"], ['auth', "role:kasir"]);
 
         // End Kasir
 

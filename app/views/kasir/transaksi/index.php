@@ -1,7 +1,7 @@
 <div class="w-full flex h-screen overflow-hidden">
     <!-- Konten Kiri (Scrollable) -->
     <div class="overflow-y-auto w-3/4 flex flex-col gap-4 h-full pl-4 py-4 pr-4">
-        
+
         <!-- Search & Reset Filter -->
         <div class="w-full flex justify-between items-center h-fit gap-4">
             <div class="w-4/5 h-fit">
@@ -41,8 +41,43 @@
         <!-- End Filter -->
 
         <!-- Tempat Grid Item/Produk Kamu Nanti -->
-        <div class="flex-1">
+        <div class="flex-1 grid grid-cols-4 gap-6">
+            <!-- Card Menu -->
+            <?php foreach ($menuData as $menu): ?>
 
+                <div class="w-full h-fit flex flex-col items-center border-2 border-gray-200 rounded-2xl shadow-sm p-4 gap-4">
+                    <p class="text-xs text-gray-400"><?= strtoupper($menu['nama_kategori']) ?></p>
+
+                    <div class="w-full aspect-[4/3] rounded-lg overflow-hidden shrink-0">
+                        <img class="w-full h-full object-cover" src="<?= Helpers::url($menu['foto']) ?>" alt="">
+                    </div>
+
+                    <div class="flex flex-col items-center">
+                        <p class="font-semibold"><?= $menu['nama'] ?></p>
+                        <p class="font-semibold text-lime-600 text-sm"><?= Helpers::rupiah($menu['harga']) ?></p>
+                    </div>
+
+
+                    <form class="w-full" action="<?= Helpers::url("/kasir/transaksi/cart/add") ?>" method="POST">
+                        <input
+                            type="hidden"
+                            name="menu_id"
+                            value="<?= $menu['id'] ?>">
+
+                        <button type="submit" class="cursor-pointer relative w-full p-2 border-2 border-lime-600 rounded-full overflow-hidden bg-lime-50">
+                            <p class="text-sm text-lime-600">ADD</p>
+
+                            <div class="flex items-center justify-center absolute right-0 top-1/2 -translate-y-1/2 h-full aspect-square p-1 rounded-full overflow-hidden">
+                                <div class="flex items-center justify-center w-full aspect-square rounded-full bg-lime-600 ">
+                                    <i class="bx bx-plus text-lime-50"></i>
+                                </div>
+                            </div>
+                        </button>
+                    </form>
+                </div>
+            <?php endforeach; ?>
+
+            <!-- End Card Menu -->
         </div>
 
     </div>
@@ -55,9 +90,93 @@
         </div>
 
         <!-- Item Keranjang (Scrollable jika item banyak) -->
-        <div class="flex-1 w-full overflow-y-auto p-4 bg-gray-100">
+        <div class="flex-1 flex flex-col w-full overflow-y-auto p-4 bg-gray-100 gap-2">
             <!-- List item keranjang -->
-             
+            <?php if (empty($data['cart'])) : ?>
+                <p>Keranjang masih kosong.</p>
+
+            <?php else : ?>
+
+                <?php foreach ($data['cart'] as $item) : ?>
+                    <!-- Card -->
+                    <div class="w-full h-fit flex flex-col bg-white rounded-lg p-3 gap-2">
+                        <div class="flex justify-between">
+                            <div class="flex gap-2">
+                                <div class="w-14 aspect-square rounded-lg shrink-0 overflow-hidden">
+                                    <img class="w-full h-full object-cover" src="<?= Helpers::url($item['foto']) ?>" alt="">
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-base"><?= $item['nama_menu'] ?></p>
+                                    <p class="text-xs font-semibold text-lime-600"><?= Helpers::rupiah($item['harga']) ?></p>
+                                </div>
+                            </div>
+                            <div>
+                                <form
+                                    action="<?= Helpers::url('/kasir/transaksi/cart/remove') ?>"
+                                    method="POST">
+                                    <input
+                                        type="hidden"
+                                        name="menu_id"
+                                        value="<?= $item['menu_id'] ?>">
+
+                                    <button type="submit" class="cursor-pointer flex items-center justify-center"><i class="bx bx-trash text-red-500"></i></button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="w-full h-fit flex items-center justify-between">
+                            <!-- Indikator Jumlah Beli -->
+                            <div class="flex items-center gap-4">
+                                <!-- Kurangi Item -->
+                                <form
+                                    class="w-full"
+                                    action="<?= Helpers::url('/kasir/transaksi/cart/update') ?>"
+                                    method="POST">
+                                    <input
+                                        type="hidden"
+                                        name="menu_id"
+                                        value="<?= $item['menu_id'] ?>">
+
+                                    <input
+                                        type="hidden"
+                                        name="action"
+                                        value="decrease">
+
+                                    <button class="flex items-center justify-center w-fit h-fit p-2 rounded-lg border border-gray-200 text-xs cursor-pointer text-gray-600"><i class="bx bx-minus"></i></button>
+                                </form>
+                                <!-- End Kurangi Item -->
+
+                                <p class="font-semibold text-sm"><?= $item['qty'] ?></p>
+
+                                <!-- Tambah Item -->
+                                <form
+                                    class="w-full"
+                                    action="<?= Helpers::url('/kasir/transaksi/cart/update') ?>"
+                                    method="POST">
+                                    <input
+                                        type="hidden"
+                                        name="menu_id"
+                                        value="<?= $item['menu_id'] ?>">
+
+                                    <input
+                                        type="hidden"
+                                        name="action"
+                                        value="increase">
+
+                                    <button type="submit" class="flex items-center justify-center w-fit h-fit p-2 rounded-lg border border-lime-600 bg-lime-600 text-xs cursor-pointer text-lime-50"><i class="bx bx-plus"></i></button>
+                                </form>
+                                <!-- End Tambah Item -->
+                            </div>
+
+                            <!-- Subtotal -->
+                            <div>
+                                <p class="font-semibold"><?= Helpers::rupiah($item['subtotal']) ?></p>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+            <!-- End Card -->
         </div>
 
         <!-- Total & Payment Footer -->
@@ -65,17 +184,17 @@
             <div class="w-full">
                 <div class="flex justify-between items-center text-sm w-full font-medium">
                     <p class="text-gray-400">Subtotal</p>
-                    <p class="font-semibold">Rp14.000</p>
+                    <p class="font-semibold"><?= Helpers::rupiah($totalBeforeTax ?? 0) ?></p>
                 </div>
                 <div class="flex justify-between items-center text-sm w-full font-medium">
                     <p class="text-gray-400">Pajak (10%)</p>
-                    <p class="font-semibold">Rp1.400</p>
+                    <p class="font-semibold"><?= Helpers::rupiah($tax ?? 0) ?></p>
                 </div>
             </div>
 
             <div class="w-full flex justify-between items-center">
                 <p class="text-lg font-semibold">Total</p>
-                <p class="text-lg font-semibold text-lime-600">Rp15.400</p>
+                <p class="text-lg font-semibold text-lime-600"><?= Helpers::rupiah($total ?? 0) ?></p>
             </div>
 
             <div class="w-full h-fit">
