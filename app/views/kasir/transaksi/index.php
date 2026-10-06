@@ -84,20 +84,29 @@
 
     <!-- Sidebar Kanan (Fixed Layout via Flexbox) -->
     <div class="w-1/4 flex flex-col justify-between bg-gray-100 h-full border-l-2 border-gray-200 shrink-0">
-        <div class="border-b border-gray-200 bg-white w-full h-fit p-4 shrink-0">
-            <h2 class="text-xl font-semibold">Detail Transaksi</h2>
-            <p class="text-xs text-gray-600">2 item dalam keranjang</p>
+        <div class="flex justify-between border-b border-gray-200 bg-white w-full h-fit p-4 shrink-0">
+            <div>
+                <h2 class="text-xl font-semibold">Detail Transaksi</h2>
+                <p class="text-xs text-gray-600"><?= $totalItem ?> item dalam keranjang</p>
+            </div>
+            <?php if (!empty($cart)): ?>
+                <div>
+                    <form action="<?= Helpers::url('/kasir/transaksi/cart/clear') ?>" method="POST">
+                        <button class="cursor-pointer text-xs underline text-red-500" type="submit">Bersihkan</button>
+                    </form>
+                </div>
+            <?php endif; ?>
         </div>
 
         <!-- Item Keranjang (Scrollable jika item banyak) -->
         <div class="flex-1 flex flex-col w-full overflow-y-auto p-4 bg-gray-100 gap-2">
             <!-- List item keranjang -->
-            <?php if (empty($data['cart'])) : ?>
-                <p>Keranjang masih kosong.</p>
+            <?php if (empty($cart)) : ?>
+                <p class="text-gray-600 text-sm">Keranjang masih kosong.</p>
 
             <?php else : ?>
 
-                <?php foreach ($data['cart'] as $item) : ?>
+                <?php foreach ($cart as $item) : ?>
                     <!-- Card -->
                     <div class="w-full h-fit flex flex-col bg-white rounded-lg p-3 gap-2">
                         <div class="flex justify-between">
@@ -198,9 +207,9 @@
             </div>
 
             <div class="w-full h-fit">
-                <button class="text-sm rounded-lg w-full h-fit py-3 bg-lime-600 text-white cursor-pointer">
+                <a href="<?= Helpers::url('/kasir/transaksi/pembayaran') ?>" class="flex items-center justify-center text-sm rounded-lg w-full h-fit py-3 bg-lime-600 text-white cursor-pointer">
                     Lanjutkan Pembayaran
-                </button>
+                </a>
             </div>
         </div>
     </div>

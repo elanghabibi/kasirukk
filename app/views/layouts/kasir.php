@@ -19,7 +19,7 @@
   <section class="w-full flex flex-col">
     <header class="flex items-center justify-between w-full bg-gray-50 border-2 border-gray-200 p-4">
       <div class="flex items-center text-lg font-medium">
-        <?php if(parse_url(Helpers::currentUrl(), PHP_URL_PATH) != "/kasir"):?>
+        <?php if(isset($back) && parse_url(Helpers::currentUrl(), PHP_URL_PATH) != "/kasir"):?>
           <a href="<?= Helpers::url($back) ?>" class="flex items-center justify-center cursor-pointer"><i class="bx bx-arrow-left-stroke text-3xl"></i></a>
           <?php endif; ?>
         <h1><?= $title ?? "" ?></h1>

@@ -31,7 +31,7 @@
             <div class="item-name"><?= $item['nama_menu'] ?></div>
             <div class="item-detail">
                 <span><?= $item['qty'] ?> x <?= number_format($item['harga_menu'], 0, ',', '.') ?></span>
-                <span><?= number_format($item['subtotal'], 0, ',', '.') ?></span>
+                <span><?= number_format($item['detail_subtotal'], 0, ',', '.') ?></span>
             </div>
         </div>
     <?php endforeach; ?>

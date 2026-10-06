@@ -2,7 +2,7 @@
 
 class DetailTransaksi extends Model
 {
-    protected $table = "transaksi";
+    protected $table = "detail_transaksi";
     protected $fillable = [
         "transaksi_id",
         "menu_id",

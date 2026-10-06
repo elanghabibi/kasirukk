@@ -52,7 +52,7 @@ class Route {
             // Kelola Transaksi
             $router->get("/admin/riwayat-transaksi", ["Admin/AdminTransaksiController", "index"], ['auth', "role:admin"]);
             
-            $router->get("/admin/riwayat-transaksi/struk/{id}", ["Admin/AdminTransaksiController", "struk"], ['auth', "role:admin"]);
+            $router->get("/riwayat-transaksi/struk/{id}", ["Admin/AdminTransaksiController", "struk"], ['auth']);
             
             // $router->post("/admin/riwayat-transaksi/tambah", ["Admin/AdminTransaksiController", "store"], ['auth', "role:admin"]);
             
@@ -71,9 +71,14 @@ class Route {
         $router->get("/kasir", ["Kasir/KasirBerandaController", "index"], ['auth', "role:kasir"]);
 
             $router->get("/kasir/transaksi", ["Kasir/KasirTransaksiController", "index"], ['auth', "role:kasir"]);
+            $router->post("/kasir/transaksi/store", ["Kasir/KasirTransaksiController", "store"], ['auth', "role:kasir"]);
+
             $router->post("/kasir/transaksi/cart/add", ["Kasir/KasirTransaksiController", "addToCart"], ['auth', "role:kasir"]);
             $router->post("/kasir/transaksi/cart/update", ["Kasir/KasirTransaksiController", "updateCart"], ['auth', "role:kasir"]);
             $router->post("/kasir/transaksi/cart/remove", ["Kasir/KasirTransaksiController", "removeFromCart"], ['auth', "role:kasir"]);
+            $router->post("/kasir/transaksi/cart/clear", ["Kasir/KasirTransaksiController", "clearCart"], ['auth', "role:kasir"]);
+
+            $router->get("/kasir/transaksi/pembayaran", ["Kasir/KasirTransaksiController", "pembayaran"], ['auth', "role:kasir"]);
 
         // End Kasir
 

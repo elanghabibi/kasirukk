@@ -5,6 +5,7 @@ class Transaksi extends Model
     protected $table = "transaksi";
     protected $fillable = [
         "user_id",
+        "kode_transaksi",
         "nama_pelanggan",
         "subtotal",
         "pajak",
@@ -28,7 +29,7 @@ class Transaksi extends Model
             detail_transaksi.nama_menu,
             detail_transaksi.harga_menu,
             detail_transaksi.qty,
-            detail_transaksi.subtotal
+            detail_transaksi.subtotal AS detail_subtotal
         ')
             ->join(
                 'detail_transaksi',
@@ -75,7 +76,7 @@ class Transaksi extends Model
                 'nama_menu' => $row['nama_menu'],
                 'harga_menu' => $row['harga_menu'],
                 'qty' => $row['qty'],
-                'subtotal' => $row['subtotal']
+                'detail_subtotal' => $row['detail_subtotal']
             ];
         }
 
@@ -129,7 +130,7 @@ class Transaksi extends Model
                 'nama_menu' => $row['nama_menu'],
                 'harga_menu' => $row['harga_menu'],
                 'qty' => $row['qty'],
-                'subtotal' => $row['subtotal']
+                'detail_subtotal' => $row['detail_subtotal']
             ];
         }
 
@@ -194,7 +195,7 @@ class Transaksi extends Model
                     'nama_menu' => $detail['nama_menu'],
                     'harga_menu' => $detail['harga_menu'],
                     'qty' => $detail['qty'],
-                    'subtotal' => $detail['subtotal']
+                    'detail_subtotal' => $detail['detail_subtotal']
                 ];
             }
 

@@ -38,4 +38,43 @@ class Menu extends Model
 
         return $this->db->single();
     }
+
+    public function getCartItems($cart)
+    {
+        if (empty($cart)) {
+            return [];
+        }
+
+        $menuIds = array_column($cart, 'menu_id');
+
+        $menus = $this
+            ->whereIn('id', $menuIds)
+            ->get();
+
+        $result = [];
+
+        foreach ($menus as $menu) {
+
+            foreach ($cart as $item) {
+
+                if ((int) $item['menu_id'] === (int) $menu['id']) {
+
+                    $result[] = [
+                        'menu_id' => $menu['id'],
+                        'nama_menu' => $menu['nama'],
+                        'harga' => $menu['harga'],
+                        'foto' => $menu['foto'],
+                        'ketersediaan' => $menu['ketersediaan'],
+                        'deleted_at' => $menu['deleted_at'],
+                        'qty' => $item['qty'],
+                        'subtotal' => $menu['harga'] * $item['qty']
+                    ];
+
+                    break;
+                }
+            }
+        }
+
+        return $result;
+    }
 }

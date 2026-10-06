@@ -73,7 +73,7 @@
                                             </button>
                                         </div>
                                         <div>
-                                            <a href="<?= Helpers::url('/admin/riwayat-transaksi/struk/' . $transaksi['id']) ?>"
+                                            <a href="<?= Helpers::url('/riwayat-transaksi/struk/' . $transaksi['id']) ?>"
                                                 class="cursor-pointer w-fit aspect-square p-2 bg-blue-100 text-blue-600 rounded flex items-center gap-1">
                                                 <i class="bx bx-printer"></i>
                                             </a>
@@ -293,7 +293,7 @@
                             <p class="font-bold text-sm text-gray-900">${item.nama_menu}</p>
                             <p class="text-xs text-gray-400">${item.qty} x ${formatRupiah(item.harga_menu)}</p>
                         </div>
-                        <span class="font-medium text-sm text-gray-900">${formatRupiah(item.subtotal)}</span>
+                        <span class="font-medium text-sm text-gray-900">${formatRupiah(item.detail_subtotal)}</span>
                     `;
                         itemsContainer.appendChild(itemRow);
                     });
