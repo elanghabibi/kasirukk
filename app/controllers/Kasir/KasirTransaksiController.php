@@ -9,10 +9,12 @@ class KasirTransaksiController extends Controller
 
         $filterKategori = $_GET['kategori'] ?? "semua";
         $keyword = trim($_GET['search'] ?? '');
+        $kategori = $_GET['kategori'] ?? 'semua';
 
         $data['title'] = "Transaksi";
         $data['back'] = "/kasir";
         $data['keyword'] = $keyword;
+
 
         $cart = $menuModel->getCartItems($_SESSION['cart']) ?? [];
         $totalItem = array_sum(
@@ -36,9 +38,22 @@ class KasirTransaksiController extends Controller
         $data['tax'] = $tax;
         $data['total'] = $total;
 
-        $menuModel->withKategori();
+        $kategoriData = $kategoriModel->orderBy('created_at', 'ASC');
 
-        $kategoriData = $kategoriModel->all();
+        if ($kategori == "semua") {
+            $menuModel->withKategori();
+        } else {
+            $kategoriFilter = $kategoriModel->where("slug", $kategori)->get();
+
+            // var_dump($kategoriFilter);
+            // exit;
+            $menuModel->withKategori()->where('kategori_id', $kategoriFilter[0]['id']);
+        }
+
+        if ($keyword !== '') {
+            $menuModel->search($keyword, ['nama']);
+        }
+
         $menuData = $menuModel->where("ketersediaan", "tersedia")->get();
 
         $data['kategoriData'] = $kategoriData;
@@ -313,7 +328,7 @@ class KasirTransaksiController extends Controller
         $transaksiData = [
             "kode_transaksi" => $kodeTransaksi,
             "user_id" => Auth::user()['id'],
-            "nama_pelanggan" => $_POST['customer'] ?? 'Umum',
+            "nama_pelanggan" => $_POST['customer'] == "" ? "Umum" : $_POST['customer'],
             "tipe_order" => $_POST['tipe_order'],
             "no_meja" => $_POST['no_meja'],
             "keterangan" => $_POST['keterangan'],
@@ -397,5 +412,51 @@ class KasirTransaksiController extends Controller
         }
 
         return $this->redirect("/kasir/transaksi");
+    }
+
+    public function riwayat()
+    {
+        $keyword = trim($_GET['search'] ?? '');
+        $page = max(1, (int) ($_GET['page'] ?? 1));
+
+        $banyakDataPerPage = 10;
+
+        $transaksiModel = $this->model('Transaksi');
+
+        if ($keyword !== '') {
+            $transaksiModel->search(
+                $keyword,
+                ['kode_transaksi', 'nama_pelanggan']
+            );
+        }
+
+        $pagination = $transaksiModel->paginateWithDetails(
+            $banyakDataPerPage,
+            $page
+        );
+
+        $data['title'] = 'Riwayat Transaksi';
+
+        $data['dataTransaksi'] = $pagination['data'];
+
+        $data['pagination'] = $pagination;
+
+        $data['back'] = "/kasir";
+
+        $data['totalTransaksi'] = $this
+            ->model('Transaksi')
+            ->count();
+
+        $data['totalPendapatan'] = $this
+            ->model('Transaksi')
+            ->sum('total');
+
+        $data['keyword'] = $keyword;
+
+        $this->view(
+            'kasir/transaksi/riwayat',
+            $data,
+            'kasir'
+        );
     }
 }

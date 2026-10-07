@@ -503,4 +503,20 @@ class Helpers
 
         return ($now - $createdTime) < (24 * 60 * 60);
     }
+
+    public static function slugToText(string $slug): string
+    {
+        return ucwords(str_replace('-', ' ', $slug));
+    }
+
+    public static function textToSlug(string $text): string
+    {
+        $text = strtolower(trim($text));
+
+        // Ganti karakter non-alphanumeric menjadi -
+        $text = preg_replace('/[^a-z0-9]+/i', '-', $text);
+
+        // Hapus - di awal dan akhir
+        return trim($text, '-');
+    }
 }

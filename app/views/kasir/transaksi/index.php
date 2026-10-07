@@ -78,6 +78,16 @@
             <?php endforeach; ?>
 
             <!-- End Card Menu -->
+
+            <div class="w-full col-span-4 flex items-center justify-center">
+                <?php if (empty($menuData)): ?>
+                    <?php if (isset($_GET['kategori'])): ?>
+                        <p class="text-gray-600 text-sm">Menu dengan kategori "<?= Helpers::slugToText($_GET['kategori']) ?>" tidak ditemukan.</p>
+                    <?php else: ?>
+                        <p class="text-gray-600 text-sm">Menu masih kosong! Silahkan tambah menu terlebih dahulu.</p>
+                    <?php endif; ?>
+                <?php endif; ?>
+            </div>
         </div>
 
     </div>

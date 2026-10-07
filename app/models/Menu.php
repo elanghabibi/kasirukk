@@ -18,7 +18,7 @@ class Menu extends Model
     public function withKategori()
     {
         return $this
-            ->select('menu.*, kategori.nama AS nama_kategori')
+            ->select('menu.*, kategori.nama AS nama_kategori, kategori.slug AS slug_kategori')
             ->join(
                 'kategori',
                 'kategori.id = menu.kategori_id'

@@ -1,9 +1,9 @@
 <div class="flex gap-4 w-full h-26">
-    <div class="flex flex-col justify-between p-4 w-56 h-full border-2 border-gray-200 rounded-lg shadow-sm">
+    <div class="flex flex-col justify-between p-4 w-56 h-full border-2 border-gray-200 rounded-lg shadow-sm gap-4">
         <h3 class="text-sm text-gray-600">Total Transaksi</h3>
         <p class="text-3xl font-semibold"><?= $totalTransaksi ?></p>
     </div>
-    <div class="flex flex-col justify-between p-4 w-70 h-full border-2 border-gray-200 rounded-lg shadow-sm">
+    <div class="flex flex-col justify-between p-4 w-70 h-full border-2 border-gray-200 rounded-lg shadow-sm gap-4">
         <h3 class="text-sm text-gray-600">Total Pendapatan</h3>
         <p class="text-3xl font-semibold"><?= Helpers::rupiah($totalPendapatan) ?></p>
     </div>
