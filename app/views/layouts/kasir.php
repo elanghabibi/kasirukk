@@ -27,11 +27,11 @@
 
       <div class="flex gap-2">
         <div class="text-right">
-          <h2 class="font-bold"><?= Helpers::firstNameInitial($_SESSION['user']['nama']) ?></h2>
-          <p class="text-xs text-gray-600"><?= ucfirst($_SESSION['user']['role']) ?></p>
+          <h2 class="font-bold"><?= Helpers::firstNameInitial(Auth::user()['nama']) ?></h2>
+          <p class="text-xs text-gray-600"><?= ucfirst(Auth::user()['role']) ?></p>
         </div>
         <div class="flex items-center justify-center w-10 aspect-square rounded-full bg-lime-600 text-white font-bold overflow-hidden">
-          <span><?= Helpers::initials($_SESSION['user']['nama'], 2) ?></span>
+          <span><?= Helpers::initials(Auth::user()['nama'], 2) ?></span>
         </div>
       </div>
     </header>

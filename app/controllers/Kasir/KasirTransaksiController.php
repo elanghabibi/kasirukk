@@ -8,6 +8,11 @@ class KasirTransaksiController extends Controller
         $menuModel = $this->model("Menu");
 
         $filterKategori = $_GET['kategori'] ?? "semua";
+
+        if ($filterKategori !== null) {
+            $_SESSION['filter_kategori'] = $filterKategori;
+        }
+
         $keyword = trim($_GET['search'] ?? '');
         $kategori = $_GET['kategori'] ?? 'semua';
 
@@ -42,6 +47,8 @@ class KasirTransaksiController extends Controller
 
         if ($kategori == "semua") {
             $menuModel->withKategori();
+
+            unset($_SESSION['kategori_transaksi']);
         } else {
             $kategoriFilter = $kategoriModel->where("slug", $kategori)->get();
 
@@ -111,6 +118,14 @@ class KasirTransaksiController extends Controller
             ];
         }
 
+        $kategori = $_SESSION['filter_kategori'] ?? null;
+
+        if ($kategori) {
+            return $this->redirect(
+                '/kasir/transaksi?kategori=' . urlencode($kategori)
+            );
+        }
+
         return $this->redirect('/kasir/transaksi');
     }
 
@@ -167,6 +182,14 @@ class KasirTransaksiController extends Controller
         unset($item);
 
         $_SESSION['cart'] = array_values($_SESSION['cart']);
+
+        $kategori = $_SESSION['filter_kategori'] ?? null;
+
+        if ($kategori) {
+            return $this->redirect(
+                '/kasir/transaksi?kategori=' . urlencode($kategori)
+            );
+        }
 
         return $this->redirect('/kasir/transaksi');
     }

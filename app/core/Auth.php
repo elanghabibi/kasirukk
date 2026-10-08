@@ -2,7 +2,9 @@
 
 class Auth {
     public static function user() {
-        if (isset($_SESSION['user'])) return $_SESSION['user'];
+        $user = Controller::model("User")->find($_SESSION['user']['id']);
+
+        if (isset($_SESSION['user'])) return $user;
     }
 }
 

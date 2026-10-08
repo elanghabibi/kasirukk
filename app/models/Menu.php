@@ -45,33 +45,39 @@ class Menu extends Model
             return [];
         }
 
+        // 1. Ambil semua menu_id dari keranjang
         $menuIds = array_column($cart, 'menu_id');
 
-        $menus = $this
+        // 2. Query data menu dari database
+        $rawMenus = $this
             ->whereIn('id', $menuIds)
             ->get();
 
+        $menus = array_column($rawMenus, null, 'id');
+
         $result = [];
 
-        foreach ($menus as $menu) {
+        // 4. Loop berdasarkan $cart agar URUTAN TERBARU tetep terjaga
+        foreach ($cart as $item) {
+            $menuId = $item['menu_id'];
 
-            foreach ($cart as $item) {
+            // Cek jika menu ada di hasil query DB
+            if (isset($menus[$menuId])) {
+                $menu = $menus[$menuId];
 
-                if ((int) $item['menu_id'] === (int) $menu['id']) {
+                // Sesuaikan sintaks ($menu['nama'] jika array, atau $menu->nama jika object)
+                $harga = is_object($menu) ? $menu->harga : $menu['harga'];
 
-                    $result[] = [
-                        'menu_id' => $menu['id'],
-                        'nama_menu' => $menu['nama'],
-                        'harga' => $menu['harga'],
-                        'foto' => $menu['foto'],
-                        'ketersediaan' => $menu['ketersediaan'],
-                        'deleted_at' => $menu['deleted_at'],
-                        'qty' => $item['qty'],
-                        'subtotal' => $menu['harga'] * $item['qty']
-                    ];
-
-                    break;
-                }
+                $result[$menuId] = [
+                    'menu_id'      => is_object($menu) ? $menu->id : $menu['id'],
+                    'nama_menu'    => is_object($menu) ? $menu->nama : $menu['nama'],
+                    'harga'        => $harga,
+                    'foto'         => is_object($menu) ? $menu->foto : $menu['foto'],
+                    'ketersediaan' => is_object($menu) ? $menu->ketersediaan : $menu['ketersediaan'],
+                    'deleted_at'   => is_object($menu) ? $menu->deleted_at : $menu['deleted_at'],
+                    'qty'          => $item['qty'],
+                    'subtotal'     => $harga * $item['qty']
+                ];
             }
         }
 

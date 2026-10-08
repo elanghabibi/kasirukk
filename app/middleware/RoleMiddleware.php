@@ -11,7 +11,7 @@ class RoleMiddleware extends Middleware
 
         $roles = explode(",", $param);
 
-        if (!in_array($_SESSION['user']['role'], $roles)) {
+        if (!in_array(Auth::user()['role'], $roles)) {
             http_response_code(403);
             require_once "../app/controllers/ErrorController.php";
             $error = new ErrorController();

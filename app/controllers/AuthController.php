@@ -59,10 +59,10 @@ class AuthController extends Controller
 
         // Login berhasil
         $_SESSION['user'] = [
-            'id' => $user['id'],
-            'nama' => $user['nama'],
-            'email' => $user['email'],
-            'role' => $user['role'],
+            'id' => $user['id']
+            // 'nama' => $user['nama'],
+            // 'email' => $user['email'],
+            // 'role' => $user['role'],
         ];
 
         Flasher::setFlash(

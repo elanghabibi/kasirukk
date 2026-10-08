@@ -10,7 +10,7 @@ class Controller
         require_once "../app/views/layouts/" . $layout . ".php";
     }
 
-    public function model($model)
+    public static function model($model)
     {
         require_once "../app/models/" . $model . ".php";
         return new $model;

@@ -1,5 +1,5 @@
 
-<h1 class="text-2xl font-semibold">Halo, <?= $_SESSION['user']['nama'] ?></h1>
+<h1 class="text-2xl font-semibold">Halo, <?= Auth::user()['nama'] ?></h1>
 
 <div class="w-full grid grid-cols-3 gap-4 h-32">
     <div class="w-full bg-white border-2 border-gray-200 rounded-xl text-gray-600 p-6 flex flex-col gap-4 shadow-md">

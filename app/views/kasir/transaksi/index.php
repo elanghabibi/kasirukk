@@ -40,14 +40,21 @@
         </div>
         <!-- End Filter -->
 
-        <!-- Tempat Grid Item/Produk Kamu Nanti -->
+        <!-- Tempat Grid Item/Produk -->
         <div class="flex-1 grid grid-cols-4 gap-6">
             <!-- Card Menu -->
+
+
             <?php foreach ($menuData as $menu): ?>
 
-                <div class="w-full h-fit flex flex-col items-center border-2 border-gray-200 rounded-2xl shadow-sm p-4 gap-4">
+                <div class="relative w-full h-fit flex flex-col items-center border-2 border-gray-200 rounded-2xl shadow-sm p-4 gap-4">
                     <p class="text-xs text-gray-400"><?= strtoupper($menu['nama_kategori']) ?></p>
 
+                    <!-- <?php if (isset($cart[$menu['id']])): ?>
+                        <div class="absolute -top-3 right-1/2 translate-x-1/2 flex items-center justify-center w-10 aspect-square border-4 border-gray-200 bg-white rounded-full text-lime-500 font-bold ">
+                            <p><?= $cart[$menu['id']]['qty'] ?></p>
+                        </div>
+                    <?php endif; ?> -->
                     <div class="w-full aspect-[4/3] rounded-lg overflow-hidden shrink-0">
                         <img class="w-full h-full object-cover" src="<?= Helpers::url($menu['foto']) ?>" alt="">
                     </div>
@@ -58,22 +65,66 @@
                     </div>
 
 
-                    <form class="w-full" action="<?= Helpers::url("/kasir/transaksi/cart/add") ?>" method="POST">
-                        <input
-                            type="hidden"
-                            name="menu_id"
-                            value="<?= $menu['id'] ?>">
+                    <?php if (isset($cart[$menu['id']])): ?>
+                        <!-- Indikator Jumlah Beli -->
+                        <div class="flex w-full justify-between items-center gap-4">
+                            <!-- Kurangi Item -->
+                            <form
+                                class="w-fit"
+                                action="<?= Helpers::url('/kasir/transaksi/cart/update') ?>"
+                                method="POST">
+                                <input
+                                    type="hidden"
+                                    name="menu_id"
+                                    value="<?= $menu['id'] ?>">
 
-                        <button type="submit" class="cursor-pointer relative w-full p-2 border-2 border-lime-600 rounded-full overflow-hidden bg-lime-50">
-                            <p class="text-sm text-lime-600">ADD</p>
+                                <input
+                                    type="hidden"
+                                    name="action"
+                                    value="decrease">
 
-                            <div class="flex items-center justify-center absolute right-0 top-1/2 -translate-y-1/2 h-full aspect-square p-1 rounded-full overflow-hidden">
-                                <div class="flex items-center justify-center w-full aspect-square rounded-full bg-lime-600 ">
-                                    <i class="bx bx-plus text-lime-50"></i>
+                                <button class="flex items-center justify-center w-fit h-fit p-2 rounded-lg border border-gray-200 text-xs cursor-pointer text-gray-600"><i class="bx bx-minus"></i></button>
+                            </form>
+                            <!-- End Kurangi Item -->
+
+                            <p class="font-semibold text-sm"><?= $cart[$menu['id']]['qty'] ?></p>
+
+                            <!-- Tambah Item -->
+                            <form
+                                class="w-fit"
+                                action="<?= Helpers::url('/kasir/transaksi/cart/update') ?>"
+                                method="POST">
+                                <input
+                                    type="hidden"
+                                    name="menu_id"
+                                    value="<?= $menu['id'] ?>">
+
+                                <input
+                                    type="hidden"
+                                    name="action"
+                                    value="increase">
+
+                                <button type="submit" class="flex items-center justify-center w-fit h-fit p-2 rounded-lg border border-lime-600 bg-lime-600 text-xs cursor-pointer text-lime-50"><i class="bx bx-plus"></i></button>
+                            </form>
+                            <!-- End Tambah Item -->
+                        </div>
+                    <?php else: ?>
+                        <form class="w-full" action="<?= Helpers::url("/kasir/transaksi/cart/add") ?>" method="POST">
+                            <input
+                                type="hidden"
+                                name="menu_id"
+                                value="<?= $menu['id'] ?>">
+                            <button type="submit" class="cursor-pointer relative w-full p-2 border-2 border-lime-600 rounded-full overflow-hidden bg-lime-50">
+                                <p class="text-sm text-lime-600">ADD</p>
+
+                                <div class="flex items-center justify-center absolute right-0 top-1/2 -translate-y-1/2 h-full aspect-square p-1 rounded-full overflow-hidden">
+                                    <div class="flex items-center justify-center w-full aspect-square rounded-full bg-lime-600 ">
+                                        <i class="bx bx-plus text-lime-50"></i>
+                                    </div>
                                 </div>
-                            </div>
-                        </button>
-                    </form>
+                            </button>
+                        </form>
+                    <?php endif; ?>
                 </div>
             <?php endforeach; ?>
 
