@@ -9,9 +9,13 @@ class RoleMiddleware extends Middleware
             exit;
         }
 
+        if ($param === null) {
+            return;
+        }
+
         $roles = explode(",", $param);
 
-        if (!in_array(Auth::user()['role'], $roles)) {
+        if (!isset($_SESSION['user']) && !in_array(Auth::user()['role'], $roles)) {
             http_response_code(403);
             require_once "../app/controllers/ErrorController.php";
             $error = new ErrorController();
@@ -20,5 +24,3 @@ class RoleMiddleware extends Middleware
         }
     }
 }
-
-?>

@@ -2,6 +2,19 @@
 
 class Controller
 {
+    public function __construct()
+    {
+        // Cek Auth otomatis setiap kali controller dipanggil
+        if (isset($_SESSION['user'])) {
+            $user = Auth::user();
+
+            if ($this->model("User")->exists("id", $user['id']) === false) {
+                unset($_SESSION['user']);
+                Flasher::setFlash("Akun tidak dapat digunakan", "warning", "Akun nonaktif");
+                $this->redirect("/login");
+            }
+        }
+    }
     public function view($viewPath, $data = [], $layout = "main")
     {
         extract($data);
@@ -16,13 +29,8 @@ class Controller
         return new $model;
     }
 
-    public function redirect($redirect) {
-        header("Location: ".BASEURL.$redirect);
+    public function redirect($redirect)
+    {
+        header("Location: " . BASEURL . $redirect);
     }
 }
-
-
-
-
-
-?>
