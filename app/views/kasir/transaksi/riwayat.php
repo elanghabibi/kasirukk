@@ -12,7 +12,7 @@
 
     <div class="w-full flex justify-between items-center h-fit gap-4">
         <div class="w-8/10">
-            <form action="<?= Helpers::url('/admin/riwayat-transaksi') ?>" method="GET" class="relative w-full" autocomplete="off" spellcheck="false">
+            <form action="<?= Helpers::url('/kasir/riwayat-transaksi') ?>" method="GET" class="relative w-full" autocomplete="off" spellcheck="false">
                 <button
                     type="submit"
                     class="flex items-center justify-center cursor-pointer absolute top-1/2 -translate-y-1/2 left-5 text-xl text-gray-600">
@@ -29,7 +29,7 @@
 
         <div class="flex-1 h-full">
             <a
-                href="<?= Helpers::url('/admin/riwayat-transaksi') ?>"
+                href="<?= Helpers::url('/kasir/riwayat-transaksi') ?>"
                 class="flex h-full w-full bg-gray-50 border border-gray-600 rounded-lg text-gray-600 items-center justify-center font-medium gap-2 text-sm">Hapus Filter</a>
         </div>
     </div>

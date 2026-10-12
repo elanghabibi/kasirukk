@@ -162,7 +162,7 @@ class Toast {
 
             warning: `
                 <div class="w-10 h-10 rounded-xl bg-yellow-50 text-yellow-600 flex items-center justify-center">
-                    <i class="bx bx-error text-2xl"></i>
+                    <i class="bx bx-alert-triangle text-2xl"></i>
                 </div>
             `,
 

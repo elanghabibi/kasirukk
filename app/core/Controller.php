@@ -32,5 +32,6 @@ class Controller
     public function redirect($redirect)
     {
         header("Location: " . BASEURL . $redirect);
+        exit;
     }
 }

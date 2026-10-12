@@ -55,7 +55,7 @@
                             <p><?= $cart[$menu['id']]['qty'] ?></p>
                         </div>
                     <?php endif; ?> -->
-                    <div class="w-full aspect-[4/3] rounded-lg overflow-hidden shrink-0">
+                    <div class="cursor-pointer btn-open-modal w-full aspect-[4/3] rounded-lg overflow-hidden shrink-0" data-menu='<?= htmlspecialchars(json_encode($menu), ENT_QUOTES, 'UTF-8') ?>'>
                         <img class="w-full h-full object-cover" src="<?= Helpers::url($menu['foto']) ?>" alt="">
                     </div>
 
@@ -65,65 +65,72 @@
                     </div>
 
 
-                    <?php if (isset($cart[$menu['id']])): ?>
-                        <!-- Indikator Jumlah Beli -->
-                        <div class="flex w-full justify-between items-center gap-4">
-                            <!-- Kurangi Item -->
-                            <form
-                                class="w-fit"
-                                action="<?= Helpers::url('/kasir/transaksi/cart/update') ?>"
-                                method="POST">
+                    <?php if ($menu['ketersediaan'] == "tersedia"): ?>
+                        <?php if (isset($cart[$menu['id']])): ?>
+                            <!-- Indikator Jumlah Beli -->
+                            <div class="flex w-full justify-between items-center gap-4">
+                                <!-- Kurangi Item -->
+                                <form
+                                    class="w-fit"
+                                    action="<?= Helpers::url('/kasir/transaksi/cart/update') ?>"
+                                    method="POST">
+                                    <input
+                                        type="hidden"
+                                        name="menu_id"
+                                        value="<?= $menu['id'] ?>">
+
+                                    <input
+                                        type="hidden"
+                                        name="action"
+                                        value="decrease">
+
+                                    <button class="flex items-center justify-center w-fit h-fit p-2 rounded-lg border border-gray-200 text-xs cursor-pointer text-gray-600"><i class="bx bx-minus"></i></button>
+                                </form>
+                                <!-- End Kurangi Item -->
+
+                                <p class="font-semibold text-sm"><?= $cart[$menu['id']]['qty'] ?></p>
+
+                                <!-- Tambah Item -->
+                                <form
+                                    class="w-fit"
+                                    action="<?= Helpers::url('/kasir/transaksi/cart/update') ?>"
+                                    method="POST">
+                                    <input
+                                        type="hidden"
+                                        name="menu_id"
+                                        value="<?= $menu['id'] ?>">
+
+                                    <input
+                                        type="hidden"
+                                        name="action"
+                                        value="increase">
+
+                                    <button type="submit" class="flex items-center justify-center w-fit h-fit p-2 rounded-lg border border-lime-600 bg-lime-600 text-xs cursor-pointer text-lime-50"><i class="bx bx-plus"></i></button>
+                                </form>
+                                <!-- End Tambah Item -->
+
+                            </div>
+                        <?php else: ?>
+                            <form class="w-full" action="<?= Helpers::url("/kasir/transaksi/cart/add") ?>" method="POST">
                                 <input
                                     type="hidden"
                                     name="menu_id"
                                     value="<?= $menu['id'] ?>">
+                                <button type="submit" class="cursor-pointer relative w-full p-2 border-2 border-lime-600 rounded-full overflow-hidden bg-lime-50">
+                                    <p class="text-sm text-lime-600">ADD</p>
 
-                                <input
-                                    type="hidden"
-                                    name="action"
-                                    value="decrease">
-
-                                <button class="flex items-center justify-center w-fit h-fit p-2 rounded-lg border border-gray-200 text-xs cursor-pointer text-gray-600"><i class="bx bx-minus"></i></button>
-                            </form>
-                            <!-- End Kurangi Item -->
-
-                            <p class="font-semibold text-sm"><?= $cart[$menu['id']]['qty'] ?></p>
-
-                            <!-- Tambah Item -->
-                            <form
-                                class="w-fit"
-                                action="<?= Helpers::url('/kasir/transaksi/cart/update') ?>"
-                                method="POST">
-                                <input
-                                    type="hidden"
-                                    name="menu_id"
-                                    value="<?= $menu['id'] ?>">
-
-                                <input
-                                    type="hidden"
-                                    name="action"
-                                    value="increase">
-
-                                <button type="submit" class="flex items-center justify-center w-fit h-fit p-2 rounded-lg border border-lime-600 bg-lime-600 text-xs cursor-pointer text-lime-50"><i class="bx bx-plus"></i></button>
-                            </form>
-                            <!-- End Tambah Item -->
-                        </div>
-                    <?php else: ?>
-                        <form class="w-full" action="<?= Helpers::url("/kasir/transaksi/cart/add") ?>" method="POST">
-                            <input
-                                type="hidden"
-                                name="menu_id"
-                                value="<?= $menu['id'] ?>">
-                            <button type="submit" class="cursor-pointer relative w-full p-2 border-2 border-lime-600 rounded-full overflow-hidden bg-lime-50">
-                                <p class="text-sm text-lime-600">ADD</p>
-
-                                <div class="flex items-center justify-center absolute right-0 top-1/2 -translate-y-1/2 h-full aspect-square p-1 rounded-full overflow-hidden">
-                                    <div class="flex items-center justify-center w-full aspect-square rounded-full bg-lime-600 ">
-                                        <i class="bx bx-plus text-lime-50"></i>
+                                    <div class="flex items-center justify-center absolute right-0 top-1/2 -translate-y-1/2 h-full aspect-square p-1 rounded-full overflow-hidden">
+                                        <div class="flex items-center justify-center w-full aspect-square rounded-full bg-lime-600 ">
+                                            <i class="bx bx-plus text-lime-50"></i>
+                                        </div>
                                     </div>
-                                </div>
-                            </button>
-                        </form>
+                                </button>
+                            </form>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <div class="flex items-center justify-center">
+                            <p class="text-lg text-gray-600">Menu Habis</p>
+                        </div>
                     <?php endif; ?>
                 </div>
             <?php endforeach; ?>
@@ -275,3 +282,112 @@
         </div>
     </div>
 </div>
+
+
+<!-- GLOBAL MODAL DETAIL MENU -->
+<div id="modalDetail" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+    <!-- Box Modal Card -->
+    <div class="space-y-4 bg-white rounded-lg shadow-2xl w-full max-w-md overflow-hidden transform transition-all duration-300 p-6 text-gray-800">
+
+        <!-- Header Modal: Judul & Close Button -->
+        <div class="flex justify-between items-center">
+            <h3 class="text-xl font-bold text-gray-900">Detail Menu</h3>
+            <button id="closeModal" class="cursor-pointer text-gray-400 hover:text-gray-600 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <div class="grid grid-cols-2 w-full gap-4">
+            <div class="w-full aspect-square overflow-hidden shrink-0 rounded-lg">
+                <img id="modalFoto" class="w-full h-full object-cover" src="<?= Helpers::url('/uploads/foto_menu/default.png') ?>" alt="">
+            </div>
+
+            <div class="w-full flex flex-col justify-between">
+                <div>
+                    <p id="modalKategori" class="text-xs">MAKANAN</p>
+                    <h2 id="modalNamaMenu" class="text-2xl font-bold">Pizza</h2>
+                    <div id="modalKetersediaan" class="mt-2 text-xs rounded-full px-3 py-0.5 w-fit border">Tersedia</div>
+                </div>
+                <div>
+                    <p id="modalHarga" class="text-lime-600 font-bold text-2xl">Rp89.999</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-2">
+            <h3 class="text-xs text-gray-800">Deskripsi</h3>
+            <p id="modalDeskripsi" class="text-xs text-gray-600">Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium repellat quam obcaecati optio dolore eum esse, itaque quidem aliquam unde.</p>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Modal Detail
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('modalDetail');
+        const closeModalBtn = document.getElementById('closeModal');
+
+        // Helper Format Rupiah (Tanpa Angka Desimal)
+        function formatRupiah(angka) {
+            return 'Rp' + new Intl.NumberFormat('id-ID').format(angka || 0);
+        }
+
+        // Helper Format Tanggal
+        function formatTanggal(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Event Delegation / Event Listener tombol detail
+        document.querySelectorAll('.btn-open-modal').forEach(button => {
+            button.addEventListener('click', function() {
+                const data = JSON.parse(this.getAttribute('data-menu'));
+
+                console.log(data);
+                document.getElementById('modalFoto').src = "../" + (data.foto || '');
+                document.getElementById('modalKategori').textContent = (data.nama_kategori || '');
+                document.getElementById('modalNamaMenu').textContent = data.nama || '';
+
+                document.getElementById('modalKetersediaan').textContent = data.ketersediaan == "tersedia" ? "Tersedia" : "Habis";
+                if (data.ketersediaan == 'tersedia') {
+                    document.getElementById('modalKetersediaan').classList.remove("border-red-600", "text-red-600", "bg-red-50");
+                    document.getElementById('modalKetersediaan').classList.add("border-green-600", "text-green-600", "bg-green-50");
+                } else {
+                    document.getElementById('modalKetersediaan').classList.remove("border-green-600", "text-green-600", "bg-green-50");
+                    document.getElementById('modalKetersediaan').classList.add("border-red-600", "text-red-600", "bg-red-50");
+                }
+                
+                document.getElementById('modalHarga').textContent = formatRupiah(data.harga) || "-";
+                document.getElementById('modalDeskripsi').textContent = data.deskripsi || "-";
+                
+                // Tampilkan Modal
+                modal.classList.remove('hidden');
+            });
+        });
+
+        // Tutup Modal via Tombol X
+        closeModalBtn.addEventListener('click', function() {
+            modal.classList.add('hidden');
+        });
+
+        // Tutup Modal via Klik Backdrop
+        window.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.classList.add('hidden');
+            }
+        });
+    });
+
+    // End Modal Detail
+</script>

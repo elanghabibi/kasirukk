@@ -282,4 +282,8 @@ class AdminMenuController extends Controller
             return $this->redirect("/admin/menu");
         }
     }
+
+    public function ketersediaan() {
+        // Benerin ini nanti
+    }
 }

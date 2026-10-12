@@ -61,7 +61,8 @@ class KasirTransaksiController extends Controller
             $menuModel->search($keyword, ['nama']);
         }
 
-        $menuData = $menuModel->where("ketersediaan", "tersedia")->get();
+        // $menuData = $menuModel->where("ketersediaan", "tersedia")->get();
+        $menuData = $menuModel->get();
 
         $data['kategoriData'] = $kategoriData;
         $data['filterKategori'] = $filterKategori;
@@ -74,13 +75,15 @@ class KasirTransaksiController extends Controller
     {
         $menuId = (int) ($_POST['menu_id'] ?? 0);
 
-        if ($menuId <= 0) {
-            return $this->redirect('/kasir/transaksi');
-        }
 
         $menuModel = $this->model('Menu');
 
         $menu = $menuModel->find($menuId);
+
+        if ($menu['ketersediaan'] == 'habis') {
+            Flasher::setFlash("Menu tidak dapat dibeli", "error", "Menu habis");
+            return $this->redirect('/kasir/transaksi');
+        }
 
         if (!$menu) {
             return $this->redirect('/kasir/transaksi');
@@ -136,7 +139,9 @@ class KasirTransaksiController extends Controller
         $menuId = (int) ($_POST['menu_id'] ?? 0);
         $action = $_POST['action'] ?? '';
 
-        if ($menuId <= 0) {
+        $menu = $menuModel->find($menuId);
+        if ($menu['ketersediaan'] == 'habis') {
+            Flasher::setFlash("Menu tidak dapat dibeli", "error", "Menu habis");
             return $this->redirect('/kasir/transaksi');
         }
 
@@ -196,9 +201,12 @@ class KasirTransaksiController extends Controller
 
     public function removeFromCart()
     {
+        $menuModel = $this->model("Menu");
         $menuId = (int) ($_POST['menu_id'] ?? 0);
 
-        if ($menuId <= 0) {
+        $menu = $menuModel->find($menuId);
+        if ($menu['ketersediaan'] == 'habis') {
+            Flasher::setFlash("Menu tidak dapat dibeli", "error", "Menu habis");
             return $this->redirect('/kasir/transaksi');
         }
 
@@ -274,9 +282,7 @@ class KasirTransaksiController extends Controller
         $detailTransaksiModel = $this->model("DetailTransaksi");
         $menuModel = $this->model("Menu");
 
-        // =========================
-        // 1. Ambil cart
-        // =========================
+        // Ambil cart
 
         $sessionCart = $_SESSION['cart'] ?? [];
 
@@ -303,9 +309,7 @@ class KasirTransaksiController extends Controller
             return $this->redirect("/kasir/transaksi");
         }
 
-        // =========================
-        // 2. Validasi form
-        // =========================
+        // Validasi form
 
         $errors = Validator::validate($_POST, [
             "tipe_order" => "required",
@@ -320,9 +324,7 @@ class KasirTransaksiController extends Controller
             return $this->redirect("/kasir/transaksi/pembayaran");
         }
 
-        // =========================
-        // 3. Hitung total
-        // =========================
+        // Hitung total
 
         $totalBeforeTax = 0;
 
@@ -337,16 +339,12 @@ class KasirTransaksiController extends Controller
         $bayar = (float) $_POST['bayar'];
         $kembalian = $bayar - $total;
 
-        // =========================
-        // 4. Buat kode transaksi
-        // =========================
+        // Buat kode transaksi
 
         $urutan = $transaksiModel->getUrutanHariIni();
         $kodeTransaksi = Helpers::formatKodeTransaksi($urutan);
 
-        // =========================
-        // 5. Data transaksi
-        // =========================
+        // Data transaksi
 
         $transaksiData = [
             "kode_transaksi" => $kodeTransaksi,
@@ -363,9 +361,7 @@ class KasirTransaksiController extends Controller
             "kembalian" => $kembalian
         ];
 
-        // =========================
-        // 6. Simpan transaksi
-        // =========================
+        // Simpan transaksi
 
         if ($transaksiModel->store($transaksiData) <= 0) {
 
@@ -378,9 +374,7 @@ class KasirTransaksiController extends Controller
             return $this->redirect("/kasir/transaksi/pembayaran");
         }
 
-        // =========================
-        // 7. Ambil transaksi yang baru dibuat
-        // =========================
+        // Ambil transaksi yang baru dibuat
 
         $transaksi = $transaksiModel->firstWhere(
             'kode_transaksi',
@@ -398,11 +392,14 @@ class KasirTransaksiController extends Controller
             return $this->redirect("/kasir/transaksi");
         }
 
-        // =========================
         // 8. Simpan detail transaksi
-        // =========================
 
         foreach ($cart as $item) {
+
+            if ($item['ketersediaan'] == 'habis') {
+                Flasher::setFlash("Menu tidak dapat dibeli", "error", "Menu habis");
+                $this->redirect('/kasir/transaksi/pembayaran');
+            }
 
             $detailTransaksiModel->store([
                 "transaksi_id" => $transaksi['id'],
