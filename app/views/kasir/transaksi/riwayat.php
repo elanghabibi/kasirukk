@@ -34,126 +34,84 @@
         </div>
     </div>
 
-    <div class="flex gap-4">
-        <!-- Table -->
-        <div class="w-full overflow-hidden rounded-lg border border-gray-200">
-            <div class="w-full overflow-x-auto">
-                <table class="min-w-[1400px] text-left text-sm">
-                    <thead class="bg-gray-100 text-gray-600 font-semibold">
-                        <tr class="border-b border-gray-200">
-                            <td class="w-14 py-3 px-6">ID</td>
-                            <td class="w-40 py-3 px-6">Kode Transaksi</td>
-                            <td class="w-38 py-3 px-6">Kasir</td>
-                            <td class="w-38 py-3 px-6">Customer</td>
-                            <td class="w-36 py-3 px-6">Tipe Order</td>
-                            <td class="w-22 py-3 px-6">Item</td>
-                            <td class="w-38 py-3 px-6">Total Harga</td>
-                            <td class="w-44 py-3 px-6">Tanggal </td>
-                            <td class="w-28 py-3 px-6">Aksi</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (!empty($dataTransaksi)) : ?>
-                            <?php foreach ($dataTransaksi as $transaksi) : ?>
-
-                                <tr>
-                                    <td class="w-14 py-3 px-6"><?= $transaksi['id'] ?></td>
-                                    <td class="w-40 py-3 px-6"><?= $transaksi['kode_transaksi'] ?></td>
-                                    <td class="w-38 py-3 px-6"><?= $transaksi['kasir'] ?></td>
-                                    <td class="w-38 py-3 px-6"><?= $transaksi['nama_pelanggan'] ?></td>
-                                    <td class="w-36 py-3 px-6"><?= $transaksi['tipe_order'] == 'dine_in' ? "Dine In" : "Take Away" ?></td>
-                                    <td class="w-22 py-3 px-6"><?= $transaksi['total_qty'] ?> item</td>
-                                    <td class="w-32 py-3 px-6"><?= Helpers::rupiah($transaksi['total']) ?></td>
-                                    <td class="w-44 py-3 px-6"><?= Helpers::formatDate($transaksi['tanggal']) ?></td>
-                                    <td class="w-28 py-3 px-6">
-                                        <div class="flex gap-2">
-                                            <div>
-                                                <button type="button"
-                                                    class="btn-open-modal cursor-pointer w-fit aspect-square p-2 bg-orange-100 text-orange-600 rounded flex items-center gap-1" data-transaksi='<?= htmlspecialchars(json_encode($transaksi), ENT_QUOTES, 'UTF-8') ?>'>
-                                                    <i class="bx bx-info-circle"></i>
-                                                </button>
-                                            </div>
-                                            <div>
-                                                <a href="<?= Helpers::url('/riwayat-transaksi/struk/' . $transaksi['id']) ?>"
-                                                    class="cursor-pointer w-fit aspect-square p-2 bg-blue-100 text-blue-600 rounded flex items-center gap-1">
-                                                    <i class="bx bx-printer"></i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-
-                            <?php endforeach; ?>
-                        <?php else : ?>
-                            <tr>
-                                <td colspan="9" class="py-3 px-6 text-center">Tidak ada data</td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Paginate -->
-            <?php
-            $currentPage = $pagination['currentPage'];
-            $totalPages = $pagination['totalPages'];
-            ?>
-
-            <div class="flex items-center justify-between text-xs p-4">
-
-                <p class="text-gray-500">
-                    Menampilkan
-                    <?= $pagination['from'] ?>
-                    sampai
-                    <?= $pagination['to'] ?>
-                    dari
-                    <?= $pagination['total'] ?>
-                    data
-                </p>
-
-                <div class="flex items-center gap-2">
-
-                    <?php if ($pagination['hasPreviousPage']): ?>
-
-                        <a
-                            href="?page=<?= $currentPage - 1 ?>&search=<?= urlencode($keyword) ?>"
-                            class="w-8 aspect-square flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-100">
-                            <i class="bx bx-chevrons-left"></i>
-                        </a>
-
-                    <?php endif; ?>
-
-
-                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-
-                        <a
-                            href="?page=<?= $i ?>&search=<?= urlencode($keyword) ?>"
-                            class="w-8 aspect-square flex items-center justify-center rounded-lg
-                    <?= $i === $currentPage
-                            ? 'bg-lime-600 text-white'
-                            : 'border border-gray-200 hover:bg-gray-100'
-                    ?>">
-                            <?= $i ?>
-                        </a>
-
-                    <?php endfor; ?>
-
-
-                    <?php if ($pagination['hasNextPage']): ?>
-
-                        <a
-                            href="?page=<?= $currentPage + 1 ?>&search=<?= urlencode($keyword) ?>"
-                            class="w-8 aspect-square flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-100">
-                            <i class="bx bx-chevrons-right"></i>
-                        </a>
-
-                    <?php endif; ?>
-
+    <div class="flex flex-col gap-4">
+        <div class="grid grid-cols-4 w-full gap-4">
+            <?php foreach ($dataTransaksi as $transaksi): ?>
+                <div class="w-full h-fit border border-gray-200 shadow-md rounded-lg p-4">
+                    <div class="w-full flex justify-between">
+                        <p class="text-sm font-semibold">#<?= $transaksi['kode_transaksi'] ?></p>
+                        <p class="text-xs text-gray-600"><?= Helpers::formatLabel($transaksi['tipe_order']) ?></p>
+                    </div>
+                    <div class="w-full justify-between flex">
+                        <div>
+                            <p><?= $transaksi['nama_pelanggan'] ?></p>
+                            <p><?= $transaksi['total_qty'] ?> qty</p>
+                        </div>
+                        <p><?= Helpers::rupiah($transaksi['total']) ?></p>
+                    </div>
                 </div>
-            </div>
-            <!-- Paginate -->
+            <?php endforeach; ?>
         </div>
-        <!-- End Table -->
+
+        <!-- Paginate -->
+        <?php
+        $currentPage = $pagination['currentPage'];
+        $totalPages = $pagination['totalPages'];
+        ?>
+
+        <div class="flex w-full items-center justify-between text-xs p-4">
+
+            <p class="text-gray-500">
+                Menampilkan
+                <?= $pagination['from'] ?>
+                sampai
+                <?= $pagination['to'] ?>
+                dari
+                <?= $pagination['total'] ?>
+                data
+            </p>
+
+            <div class="flex items-center gap-2">
+
+                <?php if ($pagination['hasPreviousPage']): ?>
+
+                    <a
+                        href="?page=<?= $currentPage - 1 ?>&search=<?= urlencode($keyword) ?>"
+                        class="w-8 aspect-square flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-100">
+                        <i class="bx bx-chevrons-left"></i>
+                    </a>
+
+                <?php endif; ?>
+
+
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+
+                    <a
+                        href="?page=<?= $i ?>&search=<?= urlencode($keyword) ?>"
+                        class="w-8 aspect-square flex items-center justify-center rounded-lg
+                    <?= $i === $currentPage
+                        ? 'bg-lime-600 text-white'
+                        : 'border border-gray-200 hover:bg-gray-100'
+                    ?>">
+                        <?= $i ?>
+                    </a>
+
+                <?php endfor; ?>
+
+
+                <?php if ($pagination['hasNextPage']): ?>
+
+                    <a
+                        href="?page=<?= $currentPage + 1 ?>&search=<?= urlencode($keyword) ?>"
+                        class="w-8 aspect-square flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-100">
+                        <i class="bx bx-chevrons-right"></i>
+                    </a>
+
+                <?php endif; ?>
+
+            </div>
+        </div>
+        <!-- Paginate -->
     </div>
 
     <!-- GLOBAL MODAL DETAIL TRANSAKSI -->

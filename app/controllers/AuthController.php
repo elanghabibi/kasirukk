@@ -98,12 +98,12 @@ class AuthController extends Controller
     //     }
     // }
 
-    public static function logout()
+    public function logout()
     {
         if (isset($_SESSION['user'])) {
             unset($_SESSION['user']);
             Flasher::setFlash("Anda telah keluar", "success", "Berhasil");
-            $this->redirect('/login');
+            return $this->redirect('/login');
         }
     }
 }
