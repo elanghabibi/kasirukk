@@ -12,15 +12,14 @@ class Kategori extends Model
     public function hasMenu($id)
     {
         $this->db->query("
-        SELECT id
+        SELECT *
         FROM menu
         WHERE kategori_id = :kategori_id
         AND deleted_at IS NULL
-        LIMIT 1
     ");
 
         $this->db->bind(':kategori_id', $id);
 
-        return $this->db->single();
+        return $this->db->resultSet();
     }
 }

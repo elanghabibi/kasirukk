@@ -37,17 +37,35 @@
     <div class="flex flex-col gap-4">
         <div class="grid grid-cols-4 w-full gap-4">
             <?php foreach ($dataTransaksi as $transaksi): ?>
-                <div class="w-full h-fit border border-gray-200 shadow-md rounded-lg p-4">
+                <div class="w-full h-fit flex flex-col border border-gray-200 shadow-md rounded-lg p-4 gap-2">
                     <div class="w-full flex justify-between">
-                        <p class="text-sm font-semibold">#<?= $transaksi['kode_transaksi'] ?></p>
+                        <p class="text-sm font-bold">#<?= $transaksi['kode_transaksi'] ?></p>
                         <p class="text-xs text-gray-600"><?= Helpers::formatLabel($transaksi['tipe_order']) ?></p>
                     </div>
                     <div class="w-full justify-between flex">
                         <div>
-                            <p><?= $transaksi['nama_pelanggan'] ?></p>
-                            <p><?= $transaksi['total_qty'] ?> qty</p>
+                            <p class="text-xl font-semibold"><?= $transaksi['nama_pelanggan'] ?></p>
+                            <p class="text-sm font-semibold"><?= $transaksi['total_qty'] ?> qty</p>
                         </div>
-                        <p><?= Helpers::rupiah($transaksi['total']) ?></p>
+                        <p class="text-xl font-semibold"><?= Helpers::rupiah($transaksi['total']) ?></p>
+                    </div>
+                    <div class="flex w-full items-end justify-between">
+                        <p class="text-xs"><?= date('d M Y H:i', strtotime($transaksi['tanggal'])) ?></p>
+
+                        <div class="flex gap-2">
+                            <div>
+                                <a href="<?= Helpers::url('/riwayat-transaksi/struk/' . $transaksi['id']) ?>"
+                                    class="cursor-pointer w-fit aspect-square p-2 bg-blue-100 text-blue-600 rounded flex items-center gap-1">
+                                    <i class="bx bx-printer"></i>
+                                </a>
+                            </div>
+                            <div>
+                                <button type="button"
+                                    class="btn-open-modal cursor-pointer w-fit aspect-square p-2 bg-orange-100 text-orange-600 rounded flex items-center gap-1" data-transaksi='<?= htmlspecialchars(json_encode($transaksi), ENT_QUOTES, 'UTF-8') ?>'>
+                                    <i class="bx bx-info-circle"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -115,11 +133,9 @@
     </div>
 
     <!-- GLOBAL MODAL DETAIL TRANSAKSI -->
-    <div id="modalDetail" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/40 p-4">
-        <!-- Box Modal Card -->
+    <div id="modalDetail" class="fixed h-full inset-0 z-50 hidden flex items-center justify-center bg-black/40 p-4">
         <div class="bg-white rounded-lg shadow-2xl w-full max-w-sm overflow-hidden transform transition-all duration-300 p-6 text-gray-800">
 
-            <!-- Header Modal: Judul & Close Button -->
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-bold text-gray-900">Detail Transaksi</h3>
                 <button id="closeModal" class="cursor-pointer text-gray-400 hover:text-gray-600 transition">
@@ -129,13 +145,11 @@
                 </button>
             </div>
 
-            <!-- Section 1: Kode Transaksi & Tanggal -->
             <div class="flex justify-between items-center mb-4 text-xs">
                 <span id="modalKode" class="font-bold text-gray-900 text-sm">#TX-20260808-002</span>
                 <span id="modalTanggal" class="text-gray-400">8 Agu 2026, 10:32</span>
             </div>
 
-            <!-- Section 2: Customer & Tipe Pemesanan -->
             <div class="flex justify-between items-start mb-4">
                 <div>
                     <p class="text-xs text-gray-400 mb-0.5">Customer</p>
@@ -148,16 +162,13 @@
 
             <hr class="border-gray-100 my-4" />
 
-            <!-- Section 3: Ringkasan Item / Qty -->
             <div class="mb-4">
                 <div class="flex justify-between items-center text-xs text-gray-400 mb-2">
                     <span>Item</span>
                     <span id="modalTotalQty">2 qty</span>
                 </div>
 
-                <!-- List Items Dynamic -->
                 <div id="modalItemsList" class="space-y-3">
-                    <!-- Item row template JS -->
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="font-bold text-sm text-gray-900">Mie Ayam</p>
@@ -170,7 +181,6 @@
 
             <hr class="border-gray-100 my-4" />
 
-            <!-- Section 4: Subtotal, Pajak, Total -->
             <div class="space-y-1.5 text-sm mb-4">
                 <div class="flex justify-between items-center">
                     <span class="font-bold text-gray-800">Subtotal</span>
@@ -186,7 +196,6 @@
                 </div>
             </div>
 
-            <!-- Section 5: Pembayaran & Kembalian -->
             <div class="space-y-1 text-sm pt-2">
                 <p class="text-xs text-gray-400 mb-1">Pembayaran</p>
                 <div class="flex justify-between items-center">
@@ -233,7 +242,7 @@
                     console.log(data);
                     // Set Informasi Atas
                     document.getElementById('modalKode').textContent = '#' + (data.kode_transaksi || '');
-                    document.getElementById('modalTanggal').textContent = formatTanggal(data.created_at);
+                    document.getElementById('modalTanggal').textContent = formatTanggal(data.tanggal);
                     document.getElementById('modalCustomer').textContent = data.nama_pelanggan || '-';
                     document.getElementById('modalTipeOrder').textContent = data.tipe_order == 'dine_in' ? 'DIne In' : 'Take Away';
 

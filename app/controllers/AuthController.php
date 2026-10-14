@@ -57,7 +57,7 @@ class AuthController extends Controller
             return $this->redirect("/login");
         }
 
-        // Login berhasil
+        // Set Session
         $_SESSION['user'] = [
             'id' => $user['id']
             // 'nama' => $user['nama'],
