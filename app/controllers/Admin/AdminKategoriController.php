@@ -255,12 +255,6 @@ class AdminKategoriController extends Controller
 
         $result = $kategoriModel->softDelete($id);
 
-        $dataMenu = $this->model("Kategori")->hasMenu($id);
-
-        foreach ($dataMenu as $menu) {
-            $this->model("Menu")->softDelete($menu['id']);
-        }
-
         if ($result > 0) {
             Flasher::setFlash(
                 "Kategori berhasil dinonaktifkan",
@@ -291,15 +285,6 @@ class AdminKategoriController extends Controller
         }
 
         $kategoriModel = $this->model("Kategori");
-
-        $dataMenu = $this->model("Kategori")->hasMenu($id);
-        foreach ($dataMenu as $menu) {
-            $this->model("Menu")->restore($menu['id']);
-            echo "Halo";
-            exit;
-
-            // FIX INI WOIII
-        }
 
         $result = $kategoriModel->restore($id);
 

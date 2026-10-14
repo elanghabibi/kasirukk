@@ -13,9 +13,7 @@ class AdminMenuController extends Controller
         $menuModel = $this->model('Menu');
 
         // Tentukan mode soft delete berdasarkan status
-        $trashedMode = $status === 'nonaktif'
-            ? 'onlyTrashed'
-            : 'active';
+        $trashedMode = $status;
 
         // Query dasar
         $menuModel->withKategori();
@@ -25,16 +23,18 @@ class AdminMenuController extends Controller
             $menuModel->search($keyword, ['nama']);
         }
 
-        if ($trashedMode == "onlyTrashed") {
+        if ($trashedMode == "nonaktif") {
             $pagination = $menuModel->onlyTrashed()->paginate(
                 $banyakDataPerPage,
                 $page
             );
-        } else if ($trashedMode == "active") {
+        } else if ($trashedMode == "aktif") {
             $pagination = $menuModel->paginate(
                 $banyakDataPerPage,
                 $page
             );
+        } else {
+            App::call404();
         }
 
         // Ambil data kategori
@@ -159,15 +159,8 @@ class AdminMenuController extends Controller
             return $this->redirect('/admin/menu');
         }
 
-        /*
-     * Default:
-     * gunakan foto lama
-     */
         $_POST['foto'] = $menuLama['foto'];
 
-        /*
-     * Cek apakah user mengupload foto baru
-     */
         if (
             isset($_FILES['foto']) &&
             $_FILES['foto']['error'] !== UPLOAD_ERR_NO_FILE
@@ -283,7 +276,35 @@ class AdminMenuController extends Controller
         }
     }
 
-    public function ketersediaan() {
-        // Benerin ini nanti
+    public function ketersediaan($id)
+    {
+        $menuModel = $this->model("Menu");
+
+        $menu = $menuModel->find($id);
+
+        if (empty($menu)) {
+            Flasher::setFlash("Menu tidak ditemukan", "error", "Gagal!");
+
+            $this->redirect("/admin/menu");
+        }
+
+        $data = [];
+
+        if ($menu['ketersediaan'] == 'tersedia') {
+            $data = [
+                'ketersediaan' => "habis"
+            ];
+
+            Flasher::setFlash("Ketersediaan " . $menu['nama'] . " telah di set habis!", "success", "Berhasil!");
+        } else if ($menu['ketersediaan'] == "habis") {
+            $data = [
+                'ketersediaan' => "tersedia"
+            ];
+
+            Flasher::setFlash("Ketersediaan " . $menu['nama'] . " telah di set tersedia!", "success", "Berhasil!");
+        }
+
+        $menuModel->update($data, $id);
+        $this->redirect("/admin/menu");
     }
 }

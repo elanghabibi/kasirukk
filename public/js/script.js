@@ -91,7 +91,7 @@ class Toast {
 
         setTimeout(() => {
             this.element?.remove();
-        }, 300);
+        }, 500);
     }
 
     createElement() {

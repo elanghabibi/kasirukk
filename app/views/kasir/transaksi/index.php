@@ -1,11 +1,12 @@
-<div class="w-full flex h-screen overflow-hidden">
+<div class="w-full flex h-screen md:overflow-hidden">
     <!-- Konten Kiri (Scrollable) -->
-    <div class="overflow-y-auto w-3/4 flex flex-col gap-4 h-full pl-4 py-4 pr-4">
+    <div class="md:overflow-y-auto w-3/4 max-md:w-full flex flex-col gap-4 h-full pl-4 py-4 pr-4 max-md:pr-0">
 
         <!-- Search & Reset Filter -->
         <div class="w-full flex justify-between items-center h-fit gap-4">
             <div class="w-4/5 h-fit">
                 <form action="<?= Helpers::url('/kasir/transaksi') ?>" method="GET" class="relative w-full" autocomplete="off" spellcheck="false">
+                    <input type="text" hidden name="kategori" value="<?= $filterKategori ?>">
                     <button
                         type="submit"
                         class="flex items-center justify-center cursor-pointer absolute top-1/2 -translate-y-1/2 left-5 text-xl text-gray-600">
@@ -28,7 +29,7 @@
         </div>
 
         <!-- Filter Kategori (Horizontal Scroll) -->
-        <div class="flex w-full overflow-x-auto scrollbar-none gap-4 shrink-0 py-1">
+        <div class="flex w-full overflow-x-auto scrollbar-none gap-4 max-md:gap-2 shrink-0 py-1">
             <a
                 href="<?= Helpers::url('/kasir/transaksi?kategori=semua' . (!empty($keyword) ? '&search=' . urlencode($keyword) : "")) ?>"
                 class="text-sm shrink-0 whitespace-nowrap w-fit h-fit px-6 py-1 rounded-full border <?= $filterKategori === 'semua' ? 'bg-lime-50 text-lime-600 border-lime-600' : 'text-gray-600 border-gray-600' ?>">Semua</a>
@@ -40,21 +41,20 @@
         </div>
         <!-- End Filter -->
 
-        <!-- Tempat Grid Item/Produk -->
-        <div class="flex-1 grid grid-cols-4 gap-6">
+        <!-- Tempat Grid Item/Produk/Menu -->
+        <?php
+        $jumlahMenuDitampilkan = 0;
+        ?>
+
+        <div class="grid grid-cols-4 max-md:grid-cols-2 gap-6 max-md:gap-4 max-md:pb-20">
             <!-- Card Menu -->
-
-
             <?php foreach ($menuData as $menu): ?>
-
-                <div class="relative w-full h-fit flex flex-col items-center border-2 border-gray-200 rounded-2xl shadow-sm p-4 gap-4">
+                <?php if ($menu['deleted_kategori'] != null) continue; ?>
+                <?php $jumlahMenuDitampilkan++; ?>
+                <div class="relative w-full h-full flex flex-col items-center justify-between text-center border-2 border-gray-200 rounded-2xl shadow-sm p-4 gap-4">
                     <p class="text-xs text-gray-400"><?= strtoupper($menu['nama_kategori']) ?></p>
 
-                    <!-- <?php if (isset($cart[$menu['id']])): ?>
-                        <div class="absolute -top-3 right-1/2 translate-x-1/2 flex items-center justify-center w-10 aspect-square border-4 border-gray-200 bg-white rounded-full text-lime-500 font-bold ">
-                            <p><?= $cart[$menu['id']]['qty'] ?></p>
-                        </div>
-                    <?php endif; ?> -->
+
                     <div class="cursor-pointer btn-open-modal w-full aspect-[4/3] rounded-lg overflow-hidden shrink-0" data-menu='<?= htmlspecialchars(json_encode($menu), ENT_QUOTES, 'UTF-8') ?>'>
                         <img class="w-full h-full object-cover" src="<?= Helpers::url($menu['foto']) ?>" alt="">
                     </div>
@@ -127,31 +127,51 @@
                                 </button>
                             </form>
                         <?php endif; ?>
-                    <?php else: ?>
-                        <div class="flex items-center justify-center">
-                            <p class="text-lg text-gray-600">Menu Habis</p>
-                        </div>
                     <?php endif; ?>
                 </div>
             <?php endforeach; ?>
 
-            <!-- End Card Menu -->
-
-            <div class="w-full col-span-4 flex items-center justify-center">
-                <?php if (empty($menuData)): ?>
+            <?php if ($jumlahMenuDitampilkan === 0): ?>
+                <div class="col-span-full flex items-center justify-center py-10">
                     <?php if (isset($_GET['kategori'])): ?>
-                        <p class="text-gray-600 text-sm">Menu dengan kategori "<?= Helpers::slugToText($_GET['kategori']) ?>" tidak ditemukan.</p>
+                        <p class="text-gray-600 text-sm text-center">
+                            Menu dengan kategori
+                            "<?= htmlspecialchars(Helpers::slugToText($_GET['kategori'])) ?>"
+                            tidak ditemukan.
+                        </p>
                     <?php else: ?>
-                        <p class="text-gray-600 text-sm">Menu masih kosong! Silahkan tambah menu terlebih dahulu.</p>
+                        <p class="text-gray-600 text-sm text-center">
+                            Menu masih kosong! Silakan tambah menu terlebih dahulu.
+                        </p>
                     <?php endif; ?>
-                <?php endif; ?>
-            </div>
-        </div>
+                </div>
+            <?php endif; ?>
 
+            <!-- End Card Menu -->
+        </div>
     </div>
 
+    <?php if (!empty($cart)): ?>
+        <div class="flex justify-between h-18 bg-gray-50 border-t border-gray-200 md:hidden w-full fixed bottom-0 left-0 p-4 items-center">
+            <div class="flex items-center gap-2">
+                <div class="flex items-center justify-center">
+                    <form class="flex items-center justify-center" action="<?= Helpers::url('/kasir/transaksi/cart/clear') ?>" method="POST">
+                        <button class="flex items-center justify-center h-full aspect-square cursor-pointer p-1 rounded-lg text-2xl bg-red-100 border border-red-600 text-red-600" type="submit"><i class="bx bx-x"></i></button>
+                    </form>
+                </div>
+                <div>
+                    <p class="font-semibold text-xl">Total: <?= Helpers::rupiah($total ?? 0) ?></p>
+                    <p class="text-xs"><?= $totalItem ?> qty</p>
+                </div>
+            </div>
+            <a href="<?= Helpers::url('/kasir/transaksi/pembayaran') ?>" class="py-2 px-4 flex items-center justify-center text-sm rounded-lg w-fit h-full bg-lime-600 text-white cursor-pointer">
+                Lanjutkan <i class="bx bx-arrow-right-stroke text-2xl"></i>
+            </a>
+        </div>
+    <?php endif; ?>
+
     <!-- Sidebar Kanan (Fixed Layout via Flexbox) -->
-    <div class="w-1/4 flex flex-col justify-between bg-gray-100 h-full border-l-2 border-gray-200 shrink-0">
+    <div class="w-1/4 max-md:hidden flex flex-col justify-between bg-gray-100 h-full border-l-2 border-gray-200 shrink-0">
         <div class="flex justify-between border-b border-gray-200 bg-white w-full h-fit p-4 shrink-0">
             <div>
                 <h2 class="text-xl font-semibold">Detail Transaksi</h2>
@@ -367,10 +387,10 @@
                     document.getElementById('modalKetersediaan').classList.remove("border-green-600", "text-green-600", "bg-green-50");
                     document.getElementById('modalKetersediaan').classList.add("border-red-600", "text-red-600", "bg-red-50");
                 }
-                
+
                 document.getElementById('modalHarga').textContent = formatRupiah(data.harga) || "-";
                 document.getElementById('modalDeskripsi').textContent = data.deskripsi || "-";
-                
+
                 // Tampilkan Modal
                 modal.classList.remove('hidden');
             });

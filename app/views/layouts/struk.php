@@ -39,6 +39,7 @@
         .header {
             text-align: center;
             margin-bottom: 12px;
+            text-transform: uppercase;
         }
 
         .header h2 {
@@ -51,7 +52,6 @@
         .header p {
             margin: 2px 0;
             font-size: 10px;
-            text-transform: uppercase;
         }
 
         /* Garis Pemisah Karakter Thermal */

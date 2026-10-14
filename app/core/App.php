@@ -123,10 +123,11 @@ class App
         return explode('/', $url);
     }
 
-    private function call404()
+    public static function call404()
     {
         require_once "../app/controllers/ErrorController.php";
         $error = new ErrorController();
         $error->notFound();
+        exit;
     }
 }

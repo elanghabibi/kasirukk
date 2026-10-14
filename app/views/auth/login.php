@@ -1,4 +1,4 @@
-<div class="relative bg-white bg-[url('../../img/food-doodle.png')] w-100 p-8 rounded-lg shadow-md">
+<div class="relative bg-white bg-[url('../img/food-doodle.png')] w-100 max-md:w-9/10 p-8 rounded-lg shadow-md">
     <div class="w-full flex flex-col gap-4 items-center">
         <div class="w-fit h-fit p-4 rounded-full bg-white shadow-md flex items-center justify-center">
         <i class="bx bx-arrow-in-left-square-half text-3xl"></i>

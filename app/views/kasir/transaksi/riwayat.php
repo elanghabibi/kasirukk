@@ -1,10 +1,10 @@
 <div class="flex flex-col space-y-4 <?= $layout == "kasir" ? "p-4" : "" ?>">
-    <div class="flex gap-4 w-full h-26">
-        <div class="flex flex-col justify-between p-4 w-56 h-full border-2 border-gray-200 rounded-lg shadow-sm gap-4">
+    <div class="flex max-md:flex-col gap-4 w-full h-26 max-md:h-fit">
+        <div class="flex flex-col justify-between p-4 w-56 max-md:w-full h-full border-2 border-gray-200 rounded-lg shadow-sm gap-4">
             <h3 class="text-sm text-gray-600">Total Transaksi</h3>
             <p class="text-3xl font-semibold"><?= $totalTransaksi ?></p>
         </div>
-        <div class="flex flex-col justify-between p-4 w-70 h-full border-2 border-gray-200 rounded-lg shadow-sm gap-4">
+        <div class="flex flex-col justify-between p-4 w-70 max-md:w-full h-full border-2 border-gray-200 rounded-lg shadow-sm gap-4">
             <h3 class="text-sm text-gray-600">Total Pendapatan</h3>
             <p class="text-3xl font-semibold"><?= Helpers::rupiah($totalPendapatan) ?></p>
         </div>
@@ -35,7 +35,7 @@
     </div>
 
     <div class="flex flex-col gap-4">
-        <div class="grid grid-cols-4 w-full gap-4">
+        <div class="grid grid-cols-4 max-md:grid-cols-1 w-full gap-4">
             <?php foreach ($dataTransaksi as $transaksi): ?>
                 <div class="w-full h-fit flex flex-col border border-gray-200 shadow-md rounded-lg p-4 gap-2">
                     <div class="w-full flex justify-between">
@@ -168,7 +168,7 @@
                     <span id="modalTotalQty">2 qty</span>
                 </div>
 
-                <div id="modalItemsList" class="space-y-3">
+                <div id="modalItemsList" class="space-y-3 mb-2">
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="font-bold text-sm text-gray-900">Mie Ayam</p>
@@ -176,6 +176,10 @@
                         </div>
                         <span class="font-medium text-sm text-gray-900">Rp14.000</span>
                     </div>
+                </div>
+
+                <div class="flex justify-between items-center text-xs text-gray-400 mb-2">
+                    <span id="modalKeterangan">-</span>
                 </div>
             </div>
 
@@ -245,6 +249,7 @@
                     document.getElementById('modalTanggal').textContent = formatTanggal(data.tanggal);
                     document.getElementById('modalCustomer').textContent = data.nama_pelanggan || '-';
                     document.getElementById('modalTipeOrder').textContent = data.tipe_order == 'dine_in' ? 'DIne In' : 'Take Away';
+                    document.getElementById('modalKeterangan').textContent = "*" + (data.keterangan || "-");
 
                     // Set Total Qty & List Item
                     document.getElementById('modalTotalQty').textContent = (data.total_qty || 0) + ' qty';

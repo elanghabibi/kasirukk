@@ -5,11 +5,10 @@
 
     <!-- Header Store -->
     <div class="header">
-        <h2>RM. MAJU JAYA</h2>
-        <p>JL. PENUH KENANGAN NO.45</p>
-        <p>BOJONGSEMEN, PEMALANG</p>
-        <p>JAWA TENGAH, KOREA SELATAN</p>
-        <p>Telepon: 081234567890</p>
+        <h2><?= Settings::set()[0]['nama_restoran'] ?></h2>
+        <p><?= Settings::set()[0]['alamat'] ?></p>
+        <p>Email: <?= Settings::set()[0]['email'] ?></p>
+        <p>Telepon: <?= Settings::set()[0]['no_telepon'] ?></p>
     </div>
 
     <div class="divider-double">================================================</div>
@@ -80,8 +79,7 @@
     <!-- Footer -->
     <div class="footer">
         <p>No Transaksi : <?= $transaksi['kode_transaksi'] ?></p>
-        <p>Terima Kasih Telah Berkunjung</p>
-        <p>Selamat Menikmati</p>
+        <p><?= Settings::set()[0]['pesan_struk'] ?></p>
     </div>
 
 </div>

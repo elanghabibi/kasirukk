@@ -1,11 +1,11 @@
 <div class="flex flex-col gap-4">
-    <div class="w-full h-40 bg-lime-50 bg-[url('../../img/food-doodle.png')] bg-repeat object-contain flex flex-col items-center justify-center gap-2">
+    <div class="w-full h-40 bg-lime-50 bg-[url('../img/food-doodle.png')] bg-repeat object-contain flex flex-col items-center justify-center gap-2">
         <p class="text-base">Total Pembayaran</p>
         <h2 class="text-lime-600 text-4xl font-extrabold"><?= Helpers::rupiah($total) ?></h2>
     </div>
 </div>
 
-<div class="grid grid-cols-2 w-full gap-8 py-4 px-40">
+<div class="grid grid-cols-2 w-full gap-8 py-4 px-40 max-md:px-4 max-md:grid-cols-1">
     <div class="flex flex-col w-full gap-4">
         <h2 class="text-lg font-semibold">Menu yang dipesan</h2>
 
@@ -95,8 +95,8 @@
             <!-- Bayar -->
             <div class="w-full max-w-lg flex flex-col gap-2">
                 <label for="bayar" class="text-gray-600">Tunai</label>
-                <input type="number" onwheel="this.blur()" name="bayar" id="bayar" class="border-2 border-gray-200 rounded-lg w-full py-2 pl-4 placeholder:text-gray-400 focus:outline-none" placeholder="0">
-
+                <input type="number" onwheel="this.blur()" name="bayar" id="bayar" class="border-2 border-gray-200 rounded-lg w-full py-2 pl-4 placeholder:text-gray-400 focus:outline-none" placeholder="0" value="<?= $_SESSION['old']['bayar'] ?? "" ?>">
+                
                 <!-- Tombol Quick Nominal -->
                 <div class="flex flex-wrap items-center gap-2 mt-1">
                     <button
@@ -161,7 +161,7 @@
                 </div>
                 <div class="flex w-full items-center justify-between">
                     <p>Kembalian</p>
-                    <p id="kembalianTxt"><?= Helpers::rupiah(0) ?></p>
+                    <p id="kembalianTxt">-<?= Helpers::rupiah($total) ?></p>
                 </div>
             </div>
 

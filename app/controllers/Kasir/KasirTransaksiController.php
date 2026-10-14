@@ -20,6 +20,9 @@ class KasirTransaksiController extends Controller
         $data['back'] = "/kasir";
         $data['keyword'] = $keyword;
 
+        if (!isset($_SESSION['cart'])) {
+            $_SESSION['cart'] = [];
+        }
 
         $cart = $menuModel->getCartItems($_SESSION['cart']) ?? [];
         $totalItem = array_sum(
@@ -50,11 +53,18 @@ class KasirTransaksiController extends Controller
 
             unset($_SESSION['kategori_transaksi']);
         } else {
-            $kategoriFilter = $kategoriModel->where("slug", $kategori)->get();
+            $kategoriFilter = $kategoriModel
+                ->where('slug', $kategori)
+                ->get();
 
-            // var_dump($kategoriFilter);
-            // exit;
-            $menuModel->withKategori()->where('kategori_id', $kategoriFilter[0]['id']);
+            if (empty($kategoriFilter)) {
+                App::call404();
+                return;
+            }
+
+            $menuModel
+                ->withKategori()
+                ->where('kategori_id', $kategoriFilter[0]['id']);
         }
 
         if ($keyword !== '') {
@@ -339,6 +349,13 @@ class KasirTransaksiController extends Controller
         $bayar = (float) $_POST['bayar'];
         $kembalian = $bayar - $total;
 
+        if ($kembalian < 0) {
+            $_SESSION['old'] = $_POST;
+            Flasher::setFlash("Uang kurang, tidak bisa menyimpan transaksi", "warning", "Gagal membuat transaksi");
+
+            $this->redirect("/kasir/transaksi/pembayaran");
+        }
+
         // Buat kode transaksi
 
         $urutan = $transaksiModel->getUrutanHariIni();
@@ -392,7 +409,7 @@ class KasirTransaksiController extends Controller
             return $this->redirect("/kasir/transaksi");
         }
 
-        // 8. Simpan detail transaksi
+        // Simpan detail transaksi
 
         foreach ($cart as $item) {
 
@@ -411,15 +428,11 @@ class KasirTransaksiController extends Controller
             ]);
         }
 
-        // =========================
-        // 9. Kosongkan cart
-        // =========================
+        // Kosonginn cart
 
         $_SESSION['cart'] = [];
 
-        // =========================
-        // 10. Redirect sesuai tombol
-        // =========================
+        // Redirect sesuai tombol
 
         Flasher::setFlash(
             "Transaksi berhasil dibuat!"

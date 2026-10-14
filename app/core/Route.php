@@ -29,12 +29,14 @@ class Route
         $router->get("/admin/menu", ["Admin/AdminMenuController", "index"], ['auth', "role:admin"]);
 
         $router->post("/admin/menu/tambah", ["Admin/AdminMenuController", "store"], ['auth', "role:admin"]);
-
+        
         $router->get("/admin/menu/edit/{id}", ["Admin/AdminMenuController", "edit"], ['auth', "role:admin"]);
         $router->post("/admin/menu/edit/{id}", ["Admin/AdminMenuController", "update"], ['auth', "role:admin"]);
-
+        
         $router->post("/admin/menu/destroy/{id}", ["Admin/AdminMenuController", "destroy"], ['auth', "role:admin"]);
-
+        
+        $router->post("/admin/menu/ketersediaan/{id}", ["Admin/AdminMenuController", "ketersediaan"], ['auth', "role:admin"]);
+        
         $router->post("/admin/menu/nonaktifkan/{id}", ["Admin/AdminMenuController", "nonaktifkan"], ['auth', "role:admin"]);
         $router->post("/admin/menu/aktifkan/{id}", ["Admin/AdminMenuController", "aktifkan"], ['auth', "role:admin"]);
 
@@ -55,17 +57,12 @@ class Route
         $router->get("/admin/riwayat-transaksi", ["Admin/AdminTransaksiController", "index"], ['auth', "role:admin"]);
 
         $router->get("/riwayat-transaksi/struk/{id}", ["Admin/AdminTransaksiController", "struk"], ['auth']);
-
-        // $router->post("/admin/riwayat-transaksi/tambah", ["Admin/AdminTransaksiController", "store"], ['auth', "role:admin"]);
-
-        // $router->get("/admin/riwayat-transaksi/edit/{id}", ["Admin/AdminTransaksiController", "edit"], ['auth', "role:admin"]);
-        // $router->post("/admin/riwayat-transaksi/edit/{id}", ["Admin/AdminTransaksiController", "update"], ['auth', "role:admin"]);
-
-        // $router->post("/admin/riwayat-transaksi/destroy/{id}", ["Admin/AdminTransaksiController", "destroy"], ['auth', "role:admin"]);
-
-        // $router->post("/admin/riwayat-transaksi/nonaktifkan/{id}", ["Admin/AdminTransaksiController", "nonaktifkan"], ['auth', "role:admin"]);
-        // $router->post("/admin/riwayat-transaksi/aktifkan/{id}", ["Admin/AdminTransaksiController", "aktifkan"], ['auth', "role:admin"]);
-
+        
+        // Pengaturan
+        $router->get("/admin/pengaturan", ["Admin/AdminPengaturanController", "index"], ['auth', "role:admin"]);
+        
+        $router->post("/admin/pengaturan/update", ["Admin/AdminPengaturanController", "update"], ['auth', "role:admin"]);
+        
         // End Admin
 
         // Kasir

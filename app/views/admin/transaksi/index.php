@@ -1,9 +1,9 @@
-<div class="flex gap-4 w-full h-26">
-    <div class="flex flex-col justify-between p-4 w-56 h-full border-2 border-gray-200 rounded-lg shadow-sm gap-4">
+<div class="flex max-md:flex-col gap-4 w-full h-26 max-md:h-fit">
+    <div class="flex flex-col justify-between p-4 w-56 max-md:w-full h-full border-2 border-gray-200 rounded-lg shadow-sm gap-4">
         <h3 class="text-sm text-gray-600">Total Transaksi</h3>
         <p class="text-3xl font-semibold"><?= $totalTransaksi ?></p>
     </div>
-    <div class="flex flex-col justify-between p-4 w-70 h-full border-2 border-gray-200 rounded-lg shadow-sm gap-4">
+    <div class="flex flex-col justify-between p-4 w-70 max-md:w-full h-full border-2 border-gray-200 rounded-lg shadow-sm gap-4">
         <h3 class="text-sm text-gray-600">Total Pendapatan</h3>
         <p class="text-3xl font-semibold"><?= Helpers::rupiah($totalPendapatan) ?></p>
     </div>
@@ -69,7 +69,7 @@
                                         <div>
                                             <button type="button"
                                                 class="btn-open-modal cursor-pointer w-fit aspect-square p-2 bg-orange-100 text-orange-600 rounded flex items-center gap-1" data-transaksi='<?= htmlspecialchars(json_encode($transaksi), ENT_QUOTES, 'UTF-8') ?>'>
-                                            <i class="bx bx-info-circle"></i>
+                                                <i class="bx bx-info-circle"></i>
                                             </button>
                                         </div>
                                         <div>
@@ -160,7 +160,6 @@
     <!-- Box Modal Card -->
     <div class="bg-white rounded-lg shadow-2xl w-full max-w-sm overflow-hidden transform transition-all duration-300 p-6 text-gray-800">
 
-        <!-- Header Modal: Judul & Close Button -->
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-xl font-bold text-gray-900">Detail Transaksi</h3>
             <button id="closeModal" class="cursor-pointer text-gray-400 hover:text-gray-600 transition">
@@ -170,13 +169,11 @@
             </button>
         </div>
 
-        <!-- Section 1: Kode Transaksi & Tanggal -->
         <div class="flex justify-between items-center mb-4 text-xs">
             <span id="modalKode" class="font-bold text-gray-900 text-sm">#TX-20260808-002</span>
             <span id="modalTanggal" class="text-gray-400">8 Agu 2026, 10:32</span>
         </div>
 
-        <!-- Section 2: Customer & Tipe Pemesanan -->
         <div class="flex justify-between items-start mb-4">
             <div>
                 <p class="text-xs text-gray-400 mb-0.5">Customer</p>
@@ -189,16 +186,13 @@
 
         <hr class="border-gray-100 my-4" />
 
-        <!-- Section 3: Ringkasan Item / Qty -->
         <div class="mb-4">
             <div class="flex justify-between items-center text-xs text-gray-400 mb-2">
                 <span>Item</span>
                 <span id="modalTotalQty">2 qty</span>
             </div>
 
-            <!-- List Items Dynamic -->
             <div id="modalItemsList" class="space-y-3">
-                <!-- Item row template JS -->
                 <div class="flex justify-between items-start">
                     <div>
                         <p class="font-bold text-sm text-gray-900">Mie Ayam</p>
@@ -207,11 +201,14 @@
                     <span class="font-medium text-sm text-gray-900">Rp14.000</span>
                 </div>
             </div>
+
+            <div class="flex justify-between items-center text-xs text-gray-400 mb-2 mt-2">
+                <span id="modalKeterangan">-</span>
+            </div>
         </div>
 
         <hr class="border-gray-100 my-4" />
 
-        <!-- Section 4: Subtotal, Pajak, Total -->
         <div class="space-y-1.5 text-sm mb-4">
             <div class="flex justify-between items-center">
                 <span class="font-bold text-gray-800">Subtotal</span>
@@ -227,7 +224,6 @@
             </div>
         </div>
 
-        <!-- Section 5: Pembayaran & Kembalian -->
         <div class="space-y-1 text-sm pt-2">
             <p class="text-xs text-gray-400 mb-1">Pembayaran</p>
             <div class="flex justify-between items-center">
@@ -274,9 +270,10 @@
                 console.log(data);
                 // Set Informasi Atas
                 document.getElementById('modalKode').textContent = '#' + (data.kode_transaksi || '');
-                document.getElementById('modalTanggal').textContent = formatTanggal(data.created_at);
+                document.getElementById('modalTanggal').textContent = formatTanggal(data.tanggal);
                 document.getElementById('modalCustomer').textContent = data.nama_pelanggan || '-';
-                document.getElementById('modalTipeOrder').textContent = data.tipe_order == 'dine_in' ? 'DIne In' : 'Take Away' ;
+                document.getElementById('modalTipeOrder').textContent = data.tipe_order == 'dine_in' ? 'DIne In' : 'Take Away';
+                document.getElementById('modalKeterangan').textContent = "*" + (data.keterangan || "-");
 
                 // Set Total Qty & List Item
                 document.getElementById('modalTotalQty').textContent = (data.total_qty || 0) + ' qty';

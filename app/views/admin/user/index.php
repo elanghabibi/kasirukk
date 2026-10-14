@@ -39,9 +39,9 @@
 </div>
 <!-- End Filter -->
 
-<div class="flex gap-4">
+<div class="flex gap-4 max-md:flex-col">
     <!-- Table -->
-    <div class="w-68/100 h-fit border border-gray-200 overflow-hidden rounded-lg">
+    <div class="w-68/100 max-md:w-full h-fit border border-gray-200 overflow-hidden rounded-lg">
         <div class="overflow-x-auto">
             <table class="w-full table-fixed text-sm text-left">
                 <thead class="bg-gray-100 text-gray-600 font-semibold">

@@ -18,7 +18,7 @@ class Menu extends Model
     public function withKategori()
     {
         return $this
-            ->select('menu.*, kategori.nama AS nama_kategori, kategori.slug AS slug_kategori')
+            ->select('menu.*, kategori.nama AS nama_kategori, kategori.slug AS slug_kategori, kategori.deleted_at AS deleted_kategori')
             ->join(
                 'kategori',
                 'kategori.id = menu.kategori_id'
@@ -45,41 +45,57 @@ class Menu extends Model
             return [];
         }
 
-        // 1. Ambil semua menu_id dari keranjang
         $menuIds = array_column($cart, 'menu_id');
 
-        // 2. Query data menu dari database
         $rawMenus = $this
+            ->select('
+            menu.*,
+            kategori.deleted_at AS deleted_kategori
+        ')
+            ->join(
+                'kategori',
+                'kategori.id = menu.kategori_id'
+            )
             ->whereIn('id', $menuIds)
             ->get();
 
         $menus = array_column($rawMenus, null, 'id');
 
         $result = [];
+        $cartBaru = [];
 
-        // 4. Loop berdasarkan $cart agar URUTAN TERBARU tetep terjaga
         foreach ($cart as $item) {
             $menuId = $item['menu_id'];
 
-            // Cek jika menu ada di hasil query DB
-            if (isset($menus[$menuId])) {
-                $menu = $menus[$menuId];
-
-                // Sesuaikan sintaks ($menu['nama'] jika array, atau $menu->nama jika object)
-                $harga = is_object($menu) ? $menu->harga : $menu['harga'];
-
-                $result[$menuId] = [
-                    'menu_id'      => is_object($menu) ? $menu->id : $menu['id'],
-                    'nama_menu'    => is_object($menu) ? $menu->nama : $menu['nama'],
-                    'harga'        => $harga,
-                    'foto'         => is_object($menu) ? $menu->foto : $menu['foto'],
-                    'ketersediaan' => is_object($menu) ? $menu->ketersediaan : $menu['ketersediaan'],
-                    'deleted_at'   => is_object($menu) ? $menu->deleted_at : $menu['deleted_at'],
-                    'qty'          => $item['qty'],
-                    'subtotal'     => $harga * $item['qty']
-                ];
+            // kalo menu nya gaada
+            if (!isset($menus[$menuId])) {
+                continue;
             }
+
+            $menu = $menus[$menuId];
+
+            if ($menu['deleted_kategori'] !== null || $menu['ketersediaan'] === "habis") {
+                continue;
+            }
+
+            $harga = $menu['harga'];
+
+            $result[$menuId] = [
+                'menu_id'      => $menu['id'],
+                'nama_menu'    => $menu['nama'],
+                'harga'        => $harga,
+                'foto'         => $menu['foto'],
+                'ketersediaan' => $menu['ketersediaan'],
+                'deleted_at'   => $menu['deleted_at'],
+                'qty'          => $item['qty'],
+                'subtotal'     => $harga * $item['qty']
+            ];
+
+            $cartBaru[] = $item;
         }
+
+        // Perbarui session biar menu lama digati baru
+        $_SESSION['cart'] = $cartBaru;
 
         return $result;
     }

@@ -36,7 +36,7 @@
       </div>
     </header>
 
-    <main class="flex-1 min-h-0 overflow-y-auto flex flex-col gap-4">
+    <main class="flex-1 min-h-0 overflow-y-auto flex flex-col gap-4 w-full max-md:pb-20">
       <?php require_once $view ?>
     </main>
   </section>

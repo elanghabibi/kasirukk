@@ -1,16 +1,16 @@
-<div class="p-4 flex flex-col gap-4">
+<div class="w-full p-4 flex flex-col gap-4">
     <h1 class="text-2xl font-semibold">Halo, <?= Auth::user()['nama'] ?></h1>
     
-    <div class="w-fit flex gap-4 h-32">
-        <div class="w-80 bg-white border-2 border-gray-200 rounded-xl text-gray-600 p-6 flex flex-col gap-4 shadow-md">
+    <div class="w-fit max-md:w-full flex max-md:flex-col max-md:h-fit gap-4 h-32">
+        <div class="w-80 max-md:w-full bg-white border-2 border-gray-200 rounded-xl text-gray-600 p-6 flex flex-col gap-4 shadow-md">
             <h2 class="font-medium">Transaksi Bulanan (<?= Helpers::currentMonthNameId() ?>)</h2>
             <p class="text-3xl font-semibold"><?= $totalTransaksi ?></p>
         </div>
-        <div class="w-80 bg-white border-2 border-gray-200 rounded-xl text-gray-600 p-6 flex flex-col gap-4 shadow-md">
+        <div class="w-80 max-md:w-full bg-white border-2 border-gray-200 rounded-xl text-gray-600 p-6 flex flex-col gap-4 shadow-md">
             <h2 class="font-medium">Pendapatan Bulanan (<?= Helpers::currentMonthNameId() ?>)</h2>
             <p class="text-3xl font-semibold"><?= Helpers::rupiah($totalPendapatan) ?></p>
         </div>
-        <div class="w-80 bg-white border-2 border-gray-200 rounded-xl text-gray-600 p-6 flex flex-col gap-4 shadow-md">
+        <div class="w-80 max-md:w-full bg-white border-2 border-gray-200 rounded-xl text-gray-600 p-6 flex flex-col gap-4 shadow-md">
             <h2 class="font-medium">Total Menu</h2>
             <p class="text-3xl font-semibold"><?= $totalMenu ?></p>
         </div>
@@ -19,12 +19,12 @@
     
     <div class="mt-4 flex flex-col gap-2">
         <h2>Jelajahi Aplikasi</h2>
-        <div class="flex gap-4">
-            <a href="<?= Helpers::url("/kasir/transaksi") ?>" class="w-28 aspect-square rounded-xl border border-gray-200 shadow-md p-4 flex flex-col gap-2 items-center justify-center">
+        <div class="grid grid-cols-10 max-md:grid-cols-3 gap-4 ">
+            <a href="<?= Helpers::url("/kasir/transaksi") ?>" class="w-full aspect-square rounded-xl border border-gray-200 shadow-md p-4 flex flex-col gap-2 items-center justify-center">
                 <i class="bx bx-list-ul-square text-lime-600 text-5xl"></i>
                 <p class="text-sm font-medium">Transaksi</p>
             </a>
-            <a href="<?= Helpers::url("/kasir/riwayat-transaksi") ?>" class="w-28 aspect-square rounded-xl border border-gray-200 shadow-md p-4 flex flex-col gap-2 items-center justify-center">
+            <a href="<?= Helpers::url("/kasir/riwayat-transaksi") ?>" class="w-full aspect-square rounded-xl border border-gray-200 shadow-md p-4 flex flex-col gap-2 items-center justify-center">
                 <i class="bx bx-history text-lime-600 text-5xl"></i>
                 <p class="text-sm font-medium w-full truncate">Riwayat Transaksi</p>
             </a>

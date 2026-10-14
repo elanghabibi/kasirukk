@@ -56,7 +56,7 @@ class Transaksi extends Model
                 $result[$id] = [
                     'id' => $row['id'],
                     'kode_transaksi' => $row['kode_transaksi'],
-                    'kasir' => $row['kasir'],
+                    'kasir' => explode(" ", $row['kasir'])[0],
                     'nama_pelanggan' => $row['nama_pelanggan'],
                     'subtotal' => $row['subtotal'],
                     'pajak' => $row['pajak'],
@@ -108,7 +108,7 @@ class Transaksi extends Model
         $transaksi = [
             'id' => $data[0]['id'],
             'kode_transaksi' => $data[0]['kode_transaksi'],
-            'kasir' => $data[0]['kasir'],
+            'kasir' => explode(" ", $data[0]['kasir'])[0],
             'nama_pelanggan' => $data[0]['nama_pelanggan'],
             'subtotal' => $data[0]['subtotal'],
             'pajak' => $data[0]['pajak'],
@@ -149,9 +149,9 @@ class Transaksi extends Model
         $pagination = $this->select('
             transaksi.*,
             users.nama AS kasir')->join(
-                'users',
-                'users.id = transaksi.user_id'
-            )->paginate($perPage, $page);
+            'users',
+            'users.id = transaksi.user_id'
+        )->paginate($perPage, $page);
 
         if (empty($pagination['data'])) {
             $pagination['data'] = [];
@@ -166,12 +166,14 @@ class Transaksi extends Model
             $result[$id] = [
                 'id' => $row['id'],
                 'kode_transaksi' => $row['kode_transaksi'],
-                'kasir' => $row['kasir'],
+                'kasir' => explode(" ", $row['kasir'])[0],
                 'nama_pelanggan' => $row['nama_pelanggan'],
                 'subtotal' => $row['subtotal'],
                 'pajak' => $row['pajak'],
                 'total' => $row['total'],
                 'tipe_order' => $row['tipe_order'],
+                'no_meja' => $row['no_meja'],
+                'keterangan' => $row['keterangan'],
                 'tanggal' => $row['tanggal_transaksi'],
                 'tunai' => $row['tunai'],
                 'kembalian' => $row['kembalian'],

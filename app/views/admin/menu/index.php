@@ -37,9 +37,9 @@
 </div>
 <!-- End Filter -->
 
-<div class="flex gap-4">
+<div class="flex gap-4 max-md:flex-col">
     <!-- Table -->
-    <div class="w-68/100 h-fit border border-gray-200 overflow-hidden rounded-lg">
+    <div class="w-68/100 max-md:w-full h-fit border border-gray-200 overflow-hidden rounded-lg">
         <div class="overflow-x-auto">
             <table class="w-full table-fixed text-sm text-left">
                 <thead class="bg-gray-100 text-gray-600 font-semibold">
@@ -65,7 +65,7 @@
                     <?php if (!empty($dataMenu)) : ?>
                         <?php foreach ($dataMenu as $menu) : ?>
 
-                            <tr>
+                            <tr class="hover:bg-gray-100 transition-all duration-200">
                                 <td class="w-14 py-3 px-6"><?= $menu['id'] ?></td>
                                 <td class="w-20 py-3 px-6">
                                     <div class="w-10 aspect-square rounded-lg overflow-hidden shrink-0">
@@ -76,12 +76,17 @@
                                 <td class="w-50 py-3 px-6 truncate"><?= Helpers::rupiah($menu['harga']) ?></td>
                                 <td class="w-14 py-3 px-6"><?= $menu['nama_kategori'] ?></td>
                                 <td class="w-30 py-3 px-6">
-                                    <?php if ($menu['ketersediaan'] === 'tersedia') : ?>
-                                        <span
-                                            class="w-fit h-fit px-3 py-1 text-xs rounded-sm bg-green-100 text-green-600">Tersedia</span>
-                                    <?php else : ?>
-                                        <span class="w-fit h-fit px-3 py-1 text-xs rounded-sm bg-red-100 text-red-600">Habis</span>
-                                    <?php endif; ?>
+                                    <div class="w-full flex items-center gap-2">
+                                        <form action="<?= Helpers::url("/admin/menu/ketersediaan/" . $menu['id']) ?>" method="POST">
+                                            <button class="flex items-center justify-center cursor-pointer" type="submit"><i class="bx bx-refresh-ccw"></i></button>
+                                        </form>
+                                        <?php if ($menu['ketersediaan'] === 'tersedia') : ?>
+                                            <span
+                                                class="w-fit h-fit px-3 py-1 text-xs rounded-sm bg-green-100 text-green-600">Tersedia</span>
+                                        <?php else : ?>
+                                            <span class="w-fit h-fit px-3 py-1 text-xs rounded-sm bg-red-100 text-red-600">Habis</span>
+                                        <?php endif; ?>
+                                    </div>
                                 </td>
                                 <td class="w-50 py-3 px-6">
                                     <?php if (!isset($menu['deleted_at'])): ?>
@@ -513,10 +518,10 @@
                     document.getElementById('modalKetersediaan').classList.remove("border-green-600", "text-green-600", "bg-green-50");
                     document.getElementById('modalKetersediaan').classList.add("border-red-600", "text-red-600", "bg-red-50");
                 }
-                
+
                 document.getElementById('modalHarga').textContent = formatRupiah(data.harga) || "-";
                 document.getElementById('modalDeskripsi').textContent = data.deskripsi || "-";
-                
+
                 // Tampilkan Modal
                 modal.classList.remove('hidden');
             });

@@ -1,5 +1,5 @@
 <form action="<?= Helpers::url("/admin/user/edit/$user[id]") ?>" method="POST" class="form space-y-4" autocomplete="off" spellcheck="false">
-    <div class="grid grid-cols-2 gap-4">
+    <div class="grid grid-cols-2 max-md:grid-cols-1 gap-4">
         <div class="flex flex-col gap-2">
             <label for="nama">Nama</label>
             <input class="w-full py-2 px-3 border border-gray-200 rounded-lg" type="text" name="nama" id="nama" value="<?= $_SESSION['old']['nama'] ?? $user['nama'] ?>">

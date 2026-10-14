@@ -2,7 +2,7 @@
 
 define("BASEURL", "http://kasirukk.test");
 // define("BASEURL", "http://localhost/kasirukk/public");
-// define("BASEURL", "http://192.168.1.8/kasirukk/public");
+// define("BASEURL", "http://192.168.1.4/kasirukk/public");
 // define("BASEURL", "http://10.0.12.20/kasirukk/public");
 
 // DB CONFIG
