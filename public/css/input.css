@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@font-face {
+    font-family: "Plus Jakarta Sans";
+    src: url("../font/plusjakartasans.ttf");
+}
+
+@theme {
+  --font-jakarta: "Plus Jakarta Sans";
+}
+
+body {
+    @apply font-jakarta
+}
+
+/* Untuk Chrome, Safari, Edge, Opera */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Untuk Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
