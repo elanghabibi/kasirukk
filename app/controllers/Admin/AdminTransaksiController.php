@@ -46,13 +46,15 @@ class AdminTransaksiController extends Controller
         );
     }
 
-    public function struk($id)
+    public function struk($kodeTransaksi)
     {
         // var_dump($this->model("Transaksi")->withDetailTransaksi()->where('id', $id)->get());
         // exit;
         $transaksiModel = $this->model("Transaksi");
 
-        $transaksi = $transaksiModel->getDetailById($id);
+        $t = $transaksiModel->where("kode_transaksi", $kodeTransaksi)->first();
+
+        $transaksi = $transaksiModel->getDetailById($t['id']);
 
         if (!$transaksi) {
             Flasher::setFlash(
@@ -61,7 +63,7 @@ class AdminTransaksiController extends Controller
                 "Gagal!"
             );
 
-            return $this->redirect("/admin/transaksi");
+            return $this->redirect("/" . Auth::user()['role'] . "/riwayat-transaksi");
         }
 
         $data = [

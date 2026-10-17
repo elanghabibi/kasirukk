@@ -36,7 +36,7 @@
                 <!-- Image Preview -->
                 <img
                     id="image-preview"
-                    src="<?= Helpers::url(Settings::set()[0]['logo']) ?>"
+                    src="<?= Helpers::url(Settings::set()[0]['logo'] ?? "/uploads/logo/default.png") ?>"
                     alt="Preview"
                     class="absolute inset-0 w-full h-full object-cover">
 

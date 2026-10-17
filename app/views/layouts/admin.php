@@ -35,7 +35,7 @@
         <div class="flex gap-2 items-center p-4">
           <div
             class="w-10 h-10 rounded-xl flex items-center justify-center text-xl">
-            <img src="<?= Helpers::url(Settings::set()[0]['logo']) ?>" alt="" class="w-full h-full object-cover rounded-xl">
+            <img src="<?= Helpers::url(Settings::set()[0]['logo'] ?? "/uploads/logo/default.png") ?>" alt="" class="w-full h-full object-cover rounded-xl">
           </div>
           <div class="flex flex-col">
             <h2 class="font-bold"><?= Settings::set()[0]['nama_restoran'] ?></h2>

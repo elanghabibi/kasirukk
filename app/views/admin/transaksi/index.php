@@ -73,7 +73,7 @@
                                             </button>
                                         </div>
                                         <div>
-                                            <a href="<?= Helpers::url('/riwayat-transaksi/struk/' . $transaksi['id']) ?>"
+                                            <a href="<?= Helpers::url('/riwayat-transaksi/struk/' . $transaksi['kode_transaksi']) ?>"
                                                 class="cursor-pointer w-fit aspect-square p-2 bg-blue-100 text-blue-600 rounded flex items-center gap-1">
                                                 <i class="bx bx-printer"></i>
                                             </a>

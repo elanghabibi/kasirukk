@@ -56,7 +56,7 @@ class Route
         // Kelola Transaksi
         $router->get("/admin/riwayat-transaksi", ["Admin/AdminTransaksiController", "index"], ['auth', "role:admin"]);
 
-        $router->get("/riwayat-transaksi/struk/{id}", ["Admin/AdminTransaksiController", "struk"], ['auth']);
+        $router->get("/riwayat-transaksi/struk/{kodeTransaksi}", ["Admin/AdminTransaksiController", "struk"], ['auth']);
         
         // Pengaturan
         $router->get("/admin/pengaturan", ["Admin/AdminPengaturanController", "index"], ['auth', "role:admin"]);

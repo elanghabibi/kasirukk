@@ -440,7 +440,7 @@ class KasirTransaksiController extends Controller
 
         if ($action === 'save_print') {
             return $this->redirect(
-                "/riwayat-transaksi/struk/" . $transaksi['id']
+                "/riwayat-transaksi/struk/" . $transaksi['kode_transaksi']
             );
         }
 
