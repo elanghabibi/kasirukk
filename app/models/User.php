@@ -6,6 +6,7 @@ class User extends Model {
         "nama",
         "email",
         "password",
+        "foto_profil",
         "role"
     ];
     protected $softDelete = true;

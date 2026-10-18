@@ -83,15 +83,15 @@
 
       <div class="p-4 flex flex-col">
         <!-- Profile User -->
-        <div class="flex gap-2 items-center">
-          <div class="flex items-center justify-center w-10 aspect-square rounded-full bg-lime-600 text-white font-bold overflow-hidden">
-            <span><?= Helpers::initials(Auth::user()['nama'], 2) ?></span>
+        <a href="<?= Helpers::url('/profil') ?>" class="flex gap-2 items-center">
+          <div class="flex items-center justify-center w-10 aspect-square rounded-full overflow-hidden">
+            <img class="w-full h-full object-cover" src="<?= Helpers::url(Auth::user()['foto_profil']) ?>" alt="">
           </div>
           <div>
             <h2 class="font-bold"><?= Helpers::firstNameInitial(Auth::user()['nama']) ?></h2>
             <p class="text-xs text-gray-600 w-35 truncate"><?= Auth::user()['email'] ?></p>
           </div>
-        </div>
+        </a>
         <!-- End Profile User -->
 
         <!-- Pengaturan -->
@@ -154,15 +154,15 @@
         </div>
       </div>
 
-      <div class="flex gap-2">
+      <a href="<?= Helpers::url('/profil') ?>" class="flex gap-2">
         <div class="text-right">
           <h2 class="font-bold"><?= Helpers::firstNameInitial(Auth::user()['nama']) ?></h2>
           <p class="text-xs text-gray-600"><?= ucfirst(Auth::user()['role']) ?></p>
         </div>
-        <div class="flex items-center justify-center w-10 aspect-square rounded-full bg-lime-600 text-white font-bold overflow-hidden">
-          <span><?= Helpers::initials(Auth::user()['nama'], 2) ?></span>
+        <div class="flex items-center justify-center w-10 aspect-square rounded-full overflow-hidden">
+          <img class="w-full h-full object-cover" src="<?= Helpers::url(Auth::user()['foto_profil']) ?>" alt="">
         </div>
-      </div>
+      </a>
     </header>
 
     <main class="flex-1 min-h-0 overflow-y-auto flex flex-col gap-4 pr-6 pl-2 max-md:pr-4 max-md:pl-4 py-4 max-md:pb-20">

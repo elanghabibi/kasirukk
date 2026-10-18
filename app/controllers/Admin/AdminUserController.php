@@ -70,7 +70,7 @@ class AdminUserController extends Controller
 
         $userModel = $this->model("User");
 
-        $emailExists = $userModel->exists("email", $_POST['email']);
+        $emailExists = $userModel->withTrashed()->exists("email", $_POST['email']);
         if ($emailExists) {
             Flasher::setFlash("Email sudah digunakan", "error", "Gagal");
             $_SESSION['old'] = $_POST;
@@ -144,16 +144,10 @@ class AdminUserController extends Controller
 
         $userModel = $this->model("User");
 
-        $emailExists = $userModel
-            ->where("email", $_POST['email'])
-            ->where('id', "!=", $id)
-            ->get();
-            
+        $emailExists = $userModel->withTrashed()->exists("email", $_POST['email']);
         if ($emailExists) {
-            $_SESSION['errors'] = [
-                'email' => 'Email sudah ada.'
-            ];
-
+            Flasher::setFlash("Email sudah digunakan", "error", "Gagal");
+            
             $_SESSION['old'] = $_POST;
             return $this->redirect("/admin/user/edit/{$id}");
         }

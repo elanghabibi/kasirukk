@@ -405,18 +405,6 @@ class Helpers
 
 
     /**
-     * Membuat kode transaksi sederhana berdasarkan ID.
-     *
-     * Contoh:
-     * 125 -> TRX-00125
-     */
-    public static function transactionCode(int $id): string
-    {
-        return 'TRX-' . str_pad($id, 5, '0', STR_PAD_LEFT);
-    }
-
-
-    /**
      * Mengubah nama kosong menjadi "Pelanggan Umum".
      */
     public static function customerName(?string $name): string

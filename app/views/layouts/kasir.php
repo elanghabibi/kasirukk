@@ -19,21 +19,21 @@
   <section class="w-full flex flex-col">
     <header class="flex items-center justify-between w-full bg-gray-50 border-2 border-gray-200 p-4">
       <div class="flex items-center text-lg font-medium">
-        <?php if(isset($back) && parse_url(Helpers::currentUrl(), PHP_URL_PATH) != "/kasir"):?>
+        <?php if (isset($back) && parse_url(Helpers::currentUrl(), PHP_URL_PATH) != "/kasir"): ?>
           <a href="<?= Helpers::url($back) ?>" class="flex items-center justify-center cursor-pointer"><i class="bx bx-arrow-left-stroke text-3xl"></i></a>
-          <?php endif; ?>
+        <?php endif; ?>
         <h1><?= $title ?? "" ?></h1>
       </div>
 
-      <div class="flex gap-2">
+      <a href="<?= Helpers::url('/profil?redirect=' . str_replace("/", "_", ltrim(Helpers::currentUrl(), '/'))) ?>" class="flex gap-2">
         <div class="text-right">
           <h2 class="font-bold"><?= Helpers::firstNameInitial(Auth::user()['nama']) ?></h2>
           <p class="text-xs text-gray-600"><?= ucfirst(Auth::user()['role']) ?></p>
         </div>
-        <div class="flex items-center justify-center w-10 aspect-square rounded-full bg-lime-600 text-white font-bold overflow-hidden">
-          <span><?= Helpers::initials(Auth::user()['nama'], 2) ?></span>
+        <div class="flex items-center justify-center w-10 aspect-square rounded-full overflow-hidden">
+          <img class="w-full h-full object-cover" src="<?= Helpers::url(Auth::user()['foto_profil']) ?>" alt="">
         </div>
-      </div>
+      </a>
     </header>
 
     <main class="flex-1 min-h-0 overflow-y-auto flex flex-col gap-4 w-full max-md:pb-20">

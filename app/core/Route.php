@@ -84,6 +84,9 @@ class Route
         $router->get("/riwayat-transaksi/struk/{id}", ["Admin/AdminTransaksiController", "struk"], ['auth']);
         // End Kasir
 
+        $router->get("/profil", ["ProfilController", "index"], ['auth']);
+        $router->post("/profil/update", ["ProfilController", "update"], ['auth']);
+
         // Auth
         $router->get("/login", ['AuthController', 'formLogin'], ['guest']);
         $router->post("/login", ['AuthController', 'login'], ['guest']);
